@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ website.acro }} | Ricerca{%endblock title %}
+{% block extra-head %}
+{% endblock extra-head %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+    {% if success %}
+    <h4><strong>Ricerca di: "{{ search }}"</strong></h4>
+      {% if all_blogs %}
+        <h5>Articoli</h5>
+        {% for blog in all_blogs %}
+          <ul>
+            <li>
+              <span><a href="{{ blog.get_path }}">{{ blog.title }}</a>
+                <em>{{ blog.intro }}</em>
+                {{ blog.date|date:"d M Y" }}</span>
+            </li>
+          </ul>
+        {% endfor %}
+      {% endif %}
+      {% if all_uploads and user.is_authenticated %}
+        <h5>Articoli per contributo</h5>
+        {% for blog in all_uploads %}
+          <ul>
+            <li>
+              <span><a href="{{ blog.get_path }}">{{ blog.title }}</a>
+                <em>{{ blog.intro }}</em>
+                {{ blog.date|date:"d M Y" }}</span>
+            </li>
+          </ul>
+        {% endfor %}
+      {% endif %}
+      {% if pages %}
+        <h5>Pagine</h5>
+        {% for page in pages %}
+          <ul>
+            <li>
+              <a href="{{ page.get_path }}">{{ page.title }}</a>
+              {{ page.intro }}
+            </li>
+          </ul>
+        {% endfor %}
+      {% endif %}
+    {% else %}
+    <h1>Ricerca nulla</h1>
+    <p>Non abbiamo trovato elementi che soddisfano la tua ricerca</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}
+
+{% block extra-js %}
+{% endblock extra-js %}
