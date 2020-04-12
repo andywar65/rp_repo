@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.mail import EmailMessage
 from filebrowser.fields import FileBrowseField
 from filebrowser.base import FileObject
+from .choices import SECTOR
 
 class User(AbstractUser):
 
@@ -43,6 +44,8 @@ class Profile(models.Model):
     yes_spam = models.BooleanField(default = False,
         verbose_name = 'Mailing list',
         help_text = 'Vuoi ricevere notifiche sugli eventi?',)
+    sector = models.CharField(max_length = 4, choices = SECTOR,
+        default = '0-NO', verbose_name = 'Corri con noi?')
 
     def get_full_name(self):
         return self.user.get_full_name()
