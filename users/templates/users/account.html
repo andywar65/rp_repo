@@ -14,21 +14,26 @@
     </p>
     {% endif %}
     <h4><strong>Account di {{ user.get_full_name }}</strong></h4>
-    <p>Da questa pagina si accede ai propri dati personali,
-      si può cambiare la propria password
-      {% if user.is_staff %}, si può andare in amministrazione{% endif %}
-      oppure si può effettuare il logout
-      (consigliabile farlo sempre alla fine della sessione).</p>
-      <a class="btn btn-success center" role="button" href="/accounts/profile/{{ user.id }}/change">
-        Cambia i tuoi dati</a>
-        <a class="btn btn-warning" role="button" href="{% url 'password_change' %}">
-          Cambia la tua password</a>
+    <p>Il tuo nome utente è <strong>{{ user.username }}</strong> (non si può modificare).
+      Qui sotto puoi cambiare i tuoi dati, di cui hai consentito il trattamento
+      secondo quanto indicato nella <a href="/docs/privacy/">Informativa della privacy.</a>
+      Se decidi di negare il consenso devi cancellare l'account.</p>
+      <a class="btn btn-success" role="button" href="/accounts/profile/{{ user.id }}/change">
+        Cambia i dati generali</a>
+      <a class="btn btn-danger" role="button" href="/accounts/profile/{{ user.id }}/delete">
+        Cancella account</a>
+      <hr class="mb-4">
+      <p>Cambia la tua password{% if user.is_staff %}, vai all' amministrazione{% endif %}
+        oppure effettua il logout
+        (consigliabile farlo sempre alla fine della sessione).</p>
+      <a class="btn btn-warning" role="button" href="{% url 'password_change' %}">
+        Cambia la tua password</a>
       {% if user.is_staff %}
         <a class="btn btn-primary" role="button" href="/admin/">
           Vai all'amministrazione</a>
       {% endif %}
-        <a class="btn btn-danger" role="button" href="{% url 'front_logout' %}">
-          Effettua il logout</a>
+      <a class="btn btn-danger" role="button" href="{% url 'front_logout' %}">
+        Effettua il logout</a>
     {% else %}
     <p class="alert alert-danger" role="alert">
       ATTENZIONE! Per accedere a quest'area bisogna essere autenticati.
