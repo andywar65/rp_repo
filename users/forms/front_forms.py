@@ -8,6 +8,7 @@ from django.forms.widgets import SelectDateWidget, CheckboxSelectMultiple
 from captcha.fields import ReCaptchaField
 from users.models import (Profile, User, UserMessage, )#User,
 from users.widgets import SmallClearableFileInput
+from users.choices import SECTOR
 
 class RegistrationForm(ModelForm):
     username = UsernameField(label = 'Nome utente', required = True,
@@ -115,6 +116,8 @@ class ProfileChangeForm(forms.Form):
         widget = forms.Textarea(attrs={'placeholder': "Parlaci un po' di te"}) )
     yes_spam = forms.BooleanField( label="Mailing list", required = False,
         help_text = "Vuoi ricevere notifiche sui nuovi articoli?")
+    sector = forms.CharField( required=True, label='Corri con noi?',
+        widget=forms.Select(choices = SECTOR, ),)
 
 class ProfileDeleteForm(forms.Form):
     delete = forms.BooleanField( label="Cancella il profilo", required = True,

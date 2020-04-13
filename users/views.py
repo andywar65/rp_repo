@@ -161,6 +161,7 @@ class ProfileChangeView(LoginRequiredMixin, FormView):
             'avatar': self.request.user.profile.avatar,
             'bio': self.request.user.profile.bio,
             'yes_spam': self.request.user.profile.yes_spam,
+            'sector': self.request.user.profile.sector,
             })
         return initial
 
@@ -173,6 +174,7 @@ class ProfileChangeView(LoginRequiredMixin, FormView):
         profile.avatar = form.cleaned_data['avatar']
         profile.bio = form.cleaned_data['bio']
         profile.yes_spam = form.cleaned_data['yes_spam']
+        profile.sector = form.cleaned_data['sector']
         user.save()
         profile.save()
         return super(ProfileChangeView, self).form_valid(form)
