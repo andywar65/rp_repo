@@ -115,7 +115,7 @@ class ProfileChangeForm(forms.Form):
     bio = forms.CharField( label = 'Breve biografia', required = False,
         widget = forms.Textarea(attrs={'placeholder': "Parlaci un po' di te"}) )
     yes_spam = forms.BooleanField( label="Mailing list", required = False,
-        help_text = "Vuoi ricevere notifiche sui nuovi articoli?")
+        help_text = "Vuoi ricevere notifiche sui nuovi articoli ed eventi?")
     sector = forms.CharField( required=True, label='Corri con noi?',
         widget=forms.Select(choices = SECTOR, ),)
 
