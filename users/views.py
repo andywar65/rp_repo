@@ -142,7 +142,8 @@ class TemplateAccountView(LoginRequiredMixin, GetMixin, TemplateView):
     template_name = 'users/account.html'
 
     def get_template_names(self):
-        if self.request.user.profile.sector == '1-YC':
+        sector = self.request.user.profile.sector
+        if sector == '1-YC':
             return ['users/account_1.html']
         return super(TemplateAccountView, self).get_template_names()
 

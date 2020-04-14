@@ -46,6 +46,15 @@ class Profile(models.Model):
         help_text = 'Vuoi ricevere notifiche sugli eventi?',)
     sector = models.CharField(max_length = 4, choices = SECTOR,
         default = '0-NO', verbose_name = 'Corri con noi?')
+    fiscal_code = models.CharField(max_length = 16,
+        blank = True, null = True, verbose_name = 'Codice fiscale',)
+    address = models.CharField(max_length = 100,
+        blank = True, null = True, verbose_name = 'Indirizzo',
+        help_text = 'Via/Piazza, civico, CAP, Città',)
+    phone = models.CharField(max_length = 50,
+        blank = True, null = True, verbose_name = 'Telefono/i',)
+    email_2 = models.EmailField(blank = True, null = True,
+        verbose_name = 'Seconda email',)
 
     def get_full_name(self):
         return self.user.get_full_name()
