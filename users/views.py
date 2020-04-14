@@ -12,7 +12,7 @@ from django.views.generic.edit import FormView, UpdateView, CreateView
 from .forms import (RegistrationForm, ContactForm,
     ContactLogForm, FrontAuthenticationForm, FrontPasswordResetForm,
     FrontSetPasswordForm, FrontPasswordChangeForm, ProfileChangeForm,
-    ProfileDeleteForm, ProfileChangeAddressForm, )
+    ProfileDeleteForm, ProfileChangeRegistryForm, ProfileChangeAddressForm, )
 from .models import User, Profile
 
 class GetMixin:
@@ -145,6 +145,8 @@ class TemplateAccountView(LoginRequiredMixin, GetMixin, TemplateView):
         sector = self.request.user.profile.sector
         if sector == '1-YC':
             return ['users/account_1.html']
+        elif sector == '2-NC':
+            return ['users/account_2.html']
         elif sector == '3-FI':
             return ['users/account_3.html']
         return super(TemplateAccountView, self).get_template_names()
@@ -190,6 +192,39 @@ class ProfileChangeView(LoginRequiredMixin, FormView):
         user.save()
         profile.save()
         return super(ProfileChangeView, self).form_valid(form)
+
+    def get_success_url(self):
+        return f'/accounts/profile/?submitted={self.request.user.get_full_name()}'
+
+class ProfileChangeRegistryView(LoginRequiredMixin, FormView):
+    form_class = ProfileChangeRegistryForm
+    template_name = 'users/profile_change_registry.html'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.id != kwargs['pk']:
+            raise Http404("User is not authorized to manage this profile")
+        return super(ProfileChangeRegistryView, self).get(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = super(ProfileChangeRegistryView, self).get_initial()
+        profile = self.request.user.profile
+        initial.update({'gender': profile.gender,
+            'date_of_birth': profile.date_of_birth,
+            'place_of_birth': profile.place_of_birth,
+            'nationality': profile.nationality,
+            'fiscal_code': profile.fiscal_code,
+            })
+        return initial
+
+    def form_valid(self, form):
+        profile = Profile.objects.get(pk = self.request.user.id)
+        profile.gender = form.cleaned_data['gender']
+        profile.date_of_birth = form.cleaned_data['date_of_birth']
+        profile.place_of_birth = form.cleaned_data['place_of_birth']
+        profile.nationality = form.cleaned_data['nationality']
+        profile.fiscal_code = form.cleaned_data['fiscal_code']
+        profile.save()
+        return super(ProfileChangeRegistryView, self).form_valid(form)
 
     def get_success_url(self):
         return f'/accounts/profile/?submitted={self.request.user.get_full_name()}'

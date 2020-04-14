@@ -8,7 +8,7 @@ from django.forms.widgets import SelectDateWidget, CheckboxSelectMultiple
 from captcha.fields import ReCaptchaField
 from users.models import (Profile, User, UserMessage, )#User,
 from users.widgets import SmallClearableFileInput
-from users.choices import SECTOR
+from users.choices import SECTOR, GENDER
 from users.validators import validate_codice_fiscale
 
 class RegistrationForm(ModelForm):
@@ -120,6 +120,20 @@ class ProfileChangeForm(forms.Form):
     sector = forms.CharField( required=True, label='Corri con noi?',
         widget=forms.Select(choices = SECTOR, ),)
 
+class ProfileChangeRegistryForm(forms.Form):
+    gender = forms.CharField( required=True, label='Sesso',
+        widget=forms.Select(choices = GENDER, ),)
+    date_of_birth = forms.DateField( input_formats=['%d/%m/%Y'], required=True,
+        label='Data di nascita (gg/mm/aaaa)',
+        widget=SelectDateWidget(years=range(datetime.now().year ,
+        datetime.now().year-100, -1), attrs={'class': 'form-control'}))
+    place_of_birth = forms.CharField( label = 'Luogo di nascita', required = True,
+        widget = forms.TextInput())
+    nationality = forms.CharField( label = 'Nazionalità', required = True,
+        widget = forms.TextInput())
+    fiscal_code = forms.CharField(required=True, label='Codice fiscale',
+        validators=[validate_codice_fiscale])
+
 class ProfileChangeAddressForm(forms.Form):
     fiscal_code = forms.CharField(required=True, label='Codice fiscale',
         validators=[validate_codice_fiscale])
@@ -131,6 +145,7 @@ class ProfileChangeAddressForm(forms.Form):
     email_2 = forms.EmailField(label = 'Email secondaria', required = False,
         widget=forms.EmailInput(attrs={'autocomplete': 'email',
             'placeholder': 'you@example.com'}))
+
 
 class ProfileDeleteForm(forms.Form):
     delete = forms.BooleanField( label="Cancella il profilo", required = True,
