@@ -9,6 +9,7 @@ from captcha.fields import ReCaptchaField
 from users.models import (Profile, User, UserMessage, )#User,
 from users.widgets import SmallClearableFileInput
 from users.choices import SECTOR
+from users.validators import validate_codice_fiscale
 
 class RegistrationForm(ModelForm):
     username = UsernameField(label = 'Nome utente', required = True,
@@ -118,6 +119,18 @@ class ProfileChangeForm(forms.Form):
         help_text = "Vuoi ricevere notifiche sui nuovi articoli ed eventi?")
     sector = forms.CharField( required=True, label='Corri con noi?',
         widget=forms.Select(choices = SECTOR, ),)
+
+class ProfileChangeAddressForm(forms.Form):
+    fiscal_code = forms.CharField(required=True, label='Codice fiscale',
+        validators=[validate_codice_fiscale])
+    address = forms.CharField( label = 'Indirizzo', required = True,
+        widget = forms.TextInput(),
+        help_text = 'Via/Piazza, civico, CAP, Città',)
+    phone = forms.CharField( label = 'Numero di telefono', required = True,
+        widget = forms.TextInput())
+    email_2 = forms.EmailField(label = 'Email secondaria', required = False,
+        widget=forms.EmailInput(attrs={'autocomplete': 'email',
+            'placeholder': 'you@example.com'}))
 
 class ProfileDeleteForm(forms.Form):
     delete = forms.BooleanField( label="Cancella il profilo", required = True,

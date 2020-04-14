@@ -12,7 +12,7 @@ from django.views.generic.edit import FormView, UpdateView, CreateView
 from .forms import (RegistrationForm, ContactForm,
     ContactLogForm, FrontAuthenticationForm, FrontPasswordResetForm,
     FrontSetPasswordForm, FrontPasswordChangeForm, ProfileChangeForm,
-    ProfileDeleteForm)
+    ProfileDeleteForm, ProfileChangeAddressForm, )
 from .models import User, Profile
 
 class GetMixin:
@@ -145,6 +145,8 @@ class TemplateAccountView(LoginRequiredMixin, GetMixin, TemplateView):
         sector = self.request.user.profile.sector
         if sector == '1-YC':
             return ['users/account_1.html']
+        elif sector == '3-FI':
+            return ['users/account_3.html']
         return super(TemplateAccountView, self).get_template_names()
 
 class FrontPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
@@ -153,6 +155,37 @@ class FrontPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
 
 class FrontPasswordChangeDoneView(LoginRequiredMixin, PasswordChangeDoneView):
     template_name = 'users/password_change_done.html'
+
+class ProfileChangeAddressView(LoginRequiredMixin, FormView):
+    form_class = ProfileChangeAddressForm
+    template_name = 'users/profile_change_address.html'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.id != kwargs['pk']:
+            raise Http404("User is not authorized to manage this profile")
+        return super(ProfileChangeAddressView, self).get(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = super(ProfileChangeAddressView, self).get_initial()
+        profile = self.request.user.profile
+        initial.update({'fiscal_code': profile.fiscal_code,
+            'address': profile.address,
+            'phone': profile.phone,
+            'email_2': profile.email_2,
+            })
+        return initial
+
+    def form_valid(self, form):
+        profile = Profile.objects.get(pk = self.request.user.id)
+        profile.fiscal_code = form.cleaned_data['fiscal_code']
+        profile.address = form.cleaned_data['address']
+        profile.phone = form.cleaned_data['phone']
+        profile.email_2 = form.cleaned_data['email_2']
+        profile.save()
+        return super(ProfileChangeAddressView, self).form_valid(form)
+
+    def get_success_url(self):
+        return f'/accounts/profile/?submitted={self.request.user.get_full_name()}'
 
 class ProfileChangeView(LoginRequiredMixin, FormView):
     form_class = ProfileChangeForm
