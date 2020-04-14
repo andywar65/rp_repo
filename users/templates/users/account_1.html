@@ -8,6 +8,13 @@
     <a class="btn btn-secondary" role="button" href="/accounts/profile/{{ user.id }}/change">
       Aggiungi i dati generali</a>
   {% endif %}
+  {% if user.profile.address %}
+    <a class="btn btn-success" role="button" href="/accounts/profile/{{ user.id }}/change/address">
+      Cambia l'indirizzo</a>
+  {% else %}
+    <a class="btn btn-secondary" role="button" href="/accounts/profile/{{ user.id }}/change/address">
+      Aggiungi l'indirizzo</a>
+  {% endif %}
   <a class="btn btn-danger" role="button" href="/accounts/profile/{{ user.id }}/delete">
     Cancella account</a>
 {% endblock account_options %}

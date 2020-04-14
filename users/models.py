@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.mail import EmailMessage
 from filebrowser.fields import FileBrowseField
 from filebrowser.base import FileObject
-from .choices import SECTOR
+from .choices import SECTOR, GENDER
 
 class User(AbstractUser):
 
@@ -46,6 +46,14 @@ class Profile(models.Model):
         help_text = 'Vuoi ricevere notifiche sugli eventi?',)
     sector = models.CharField(max_length = 4, choices = SECTOR,
         default = '0-NO', verbose_name = 'Corri con noi?')
+    gender = models.CharField(max_length = 1, choices = GENDER,
+        blank = True, null=True, verbose_name = 'Sesso', )
+    date_of_birth = models.DateField( blank=True, null=True,
+        verbose_name = 'Data di nascita',)
+    place_of_birth = models.CharField(max_length = 50,
+        blank = True, null = True, verbose_name = 'Luogo di nascita',)
+    nationality = models.CharField(max_length = 50,
+        blank = True, null = True, verbose_name = 'Nazionalità',)
     fiscal_code = models.CharField(max_length = 16,
         blank = True, null = True, verbose_name = 'Codice fiscale',)
     address = models.CharField(max_length = 100,
