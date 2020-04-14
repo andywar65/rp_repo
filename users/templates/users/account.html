@@ -18,10 +18,17 @@
       Qui sotto puoi cambiare i tuoi dati, di cui hai consentito il trattamento
       secondo quanto indicato nella <a href="/docs/privacy/">Informativa della privacy.</a>
       Se decidi di negare il consenso devi cancellare l'account.</p>
-      <a class="btn btn-success" role="button" href="/accounts/profile/{{ user.id }}/change">
-        Cambia i dati generali</a>
-      <a class="btn btn-danger" role="button" href="/accounts/profile/{{ user.id }}/delete">
-        Cancella account</a>
+      {% block account_options %}
+        {% if user.first_name %}
+          <a class="btn btn-success" role="button" href="/accounts/profile/{{ user.id }}/change">
+            Cambia i dati generali</a>
+        {% else %}
+          <a class="btn btn-secondary" role="button" href="/accounts/profile/{{ user.id }}/change">
+            Aggiungi i dati generali</a>
+        {% endif %}
+        <a class="btn btn-danger" role="button" href="/accounts/profile/{{ user.id }}/delete">
+          Cancella account</a>
+      {% endblock account_options %}
       <hr class="mb-4">
       <p>Cambia la tua password{% if user.is_staff %}, vai all' amministrazione{% endif %}
         oppure effettua il logout

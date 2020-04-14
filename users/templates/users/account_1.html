@@ -1,0 +1,13 @@
+{% extends 'users/account.html' %}
+
+{% block account_options %}
+  {% if user.first_name %}
+    <a class="btn btn-success" role="button" href="/accounts/profile/{{ user.id }}/change">
+      Cambia i dati generali</a>
+  {% else %}
+    <a class="btn btn-secondary" role="button" href="/accounts/profile/{{ user.id }}/change">
+      Aggiungi i dati generali</a>
+  {% endif %}
+  <a class="btn btn-danger" role="button" href="/accounts/profile/{{ user.id }}/delete">
+    Cancella account</a>
+{% endblock account_options %}

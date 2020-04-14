@@ -141,6 +141,11 @@ class TemplateResetDoneView(TemplateView):
 class TemplateAccountView(LoginRequiredMixin, GetMixin, TemplateView):
     template_name = 'users/account.html'
 
+    def get_template_names(self):
+        if self.request.user.profile.sector == '1-YC':
+            return ['users/account_1.html']
+        return super(TemplateAccountView, self).get_template_names()
+
 class FrontPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     template_name = 'users/password_change.html'
     form_class = FrontPasswordChangeForm
