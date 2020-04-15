@@ -12,8 +12,9 @@ from django.views.generic.edit import FormView, UpdateView, CreateView
 from .forms import (RegistrationForm, ContactForm,
     ContactLogForm, FrontAuthenticationForm, FrontPasswordResetForm,
     FrontSetPasswordForm, FrontPasswordChangeForm, ProfileChangeForm,
-    ProfileDeleteForm, ProfileChangeRegistryForm, ProfileChangeAddressForm, )
-from .models import User, Profile
+    ProfileDeleteForm, ProfileChangeRegistryForm, ProfileChangeAddressForm,
+    ProfileChangeCourseForm, )
+from .models import User, Profile, CourseSchedule
 
 class GetMixin:
 
@@ -256,6 +257,44 @@ class ProfileChangeAddressView(LoginRequiredMixin, FormView):
         profile.email_2 = form.cleaned_data['email_2']
         profile.save()
         return super(ProfileChangeAddressView, self).form_valid(form)
+
+    def get_success_url(self):
+        return f'/accounts/profile/?submitted={self.request.user.get_full_name()}'
+
+class ProfileChangeCourseView(LoginRequiredMixin, UpdateView):
+    model = Profile
+    form_class = ProfileChangeCourseForm
+    template_name = 'users/profile_change_course.html'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.id != kwargs['pk']:
+            raise Http404("User is not authorized to manage this profile")
+        return super(ProfileChangeCourseView, self).get(request, *args, **kwargs)
+
+    #def get_initial(self):
+        #initial = super(ProfileChangeCourseView, self).get_initial()
+        #profile = self.request.user.profile
+        #initial.update({'course': profile.course,
+            #'course_alt': profile.course_alt,
+            #'course_membership': profile.course_membership,
+            #'sign_up': profile.sign_up,
+            #'privacy': profile.privacy,
+            #'med_cert': profile.med_cert,
+            #})
+        #return initial
+
+    #def form_valid(self, form):
+        #profile = Profile.objects.get(pk = self.request.user.id)
+        #profile.course.set(form.cleaned_data['course'])
+        #xlb = profile.course
+        #profile.course_alt = form.cleaned_data['course_alt']
+        #profile.course_membership = form.cleaned_data['course_membership']
+        #profile.sign_up = form.cleaned_data['sign_up']
+        #profile.privacy = form.cleaned_data['privacy']
+        #profile.med_cert = form.cleaned_data['med_cert']
+        #profile.save()
+        #assert False
+        #return super(ProfileChangeCourseView, self).form_valid(form)
 
     def get_success_url(self):
         return f'/accounts/profile/?submitted={self.request.user.get_full_name()}'

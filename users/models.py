@@ -80,10 +80,11 @@ class Profile(models.Model):
     course = models.ManyToManyField(CourseSchedule,
         blank = True, verbose_name = 'Orari scelti', )
     course_alt = models.CharField(max_length = 100,
-        blank = True, null = True, verbose_name = 'Altro orario',)
+        blank = True, null = True, verbose_name = 'Altro orario',
+        help_text = "Solo se si è selezionato 'Altro'")
     course_membership = models.CharField(max_length = 4, choices = COURSE,
         blank = True, null = True, verbose_name = 'Federazione / Ente sportivo',
-        help_text = 'Solo se si segue un corso')
+        )
     no_course_membership = models.CharField(max_length = 4, choices = NO_COURSE,
         blank = True, null = True, verbose_name = 'Federazione / Ente sportivo',
         help_text = 'Solo se non si segue un corso')

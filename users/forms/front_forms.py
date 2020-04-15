@@ -6,9 +6,9 @@ from django.contrib.auth.forms import (AuthenticationForm, UsernameField,
 from django.forms import ModelForm
 from django.forms.widgets import SelectDateWidget, CheckboxSelectMultiple
 from captcha.fields import ReCaptchaField
-from users.models import (Profile, User, UserMessage, )#User,
+from users.models import (Profile, User, UserMessage, CourseSchedule, )
 from users.widgets import SmallClearableFileInput
-from users.choices import SECTOR, GENDER
+from users.choices import SECTOR, GENDER, COURSE, NO_COURSE
 from users.validators import validate_codice_fiscale
 
 class RegistrationForm(ModelForm):
@@ -146,6 +146,50 @@ class ProfileChangeAddressForm(forms.Form):
         widget=forms.EmailInput(attrs={'autocomplete': 'email',
             'placeholder': 'you@example.com'}))
 
+class ProfileChangeCourseForm(ModelForm):
+    #course = forms.ModelMultipleChoiceField(required=True,
+        #label = 'Orari scelti',
+    #widget=forms.CheckboxSelectMultiple(),
+        #queryset = CourseSchedule.objects.all())
+    #course_alt = forms.CharField( label='Altri orari', required = False,
+        #widget = forms.TextInput(),
+        #help_text = "Solo se si è selezionato 'Altro'")
+    #course_membership = forms.CharField( required=True,
+        #label = 'Federazione / Ente sportivo',
+        #widget=forms.Select(choices = COURSE, ),)
+    #sign_up = forms.FileField( required = True,
+        #label = 'Richiesta di tesseramento',
+        #widget = SmallClearableFileInput())
+    #privacy = forms.FileField( required = True,
+        #label = 'Privacy', widget = SmallClearableFileInput())
+    #med_cert = forms.FileField( required = True,
+        #label = 'Certificato medico',widget = SmallClearableFileInput())
+
+    def clean(self):
+        cd = super().clean()
+        try:
+            course = cd.get('course')
+            course_alt = cd.get('course_alt')
+            for sched in course:
+                if sched.full == 'Altro' and course_alt == None:
+                    self.add_error('course_alt', forms.ValidationError(
+                        "Hai scelto 'Altro', quindi scrivi qualcosa!",
+                        code='describe_course_alternative',
+                    ))
+        except:
+            pass
+
+    class Meta:
+        model = Profile
+        fields = (
+            'course', 'course_alt', 'course_membership',
+            'sign_up', 'privacy', 'med_cert', )
+        widgets = {
+            'sign_up' : SmallClearableFileInput(),
+            'privacy' : SmallClearableFileInput(),
+            'med_cert' : SmallClearableFileInput(),
+            'course': CheckboxSelectMultiple(),
+            }
 
 class ProfileDeleteForm(forms.Form):
     delete = forms.BooleanField( label="Cancella il profilo", required = True,
