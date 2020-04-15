@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.mail import EmailMessage
 from filebrowser.fields import FileBrowseField
 from filebrowser.base import FileObject
-from .choices import SECTOR, GENDER
+from .choices import SECTOR, GENDER, COURSE, NO_COURSE
 
 class User(AbstractUser):
 
@@ -45,12 +45,15 @@ class CourseSchedule(models.Model):
         verbose_name = 'Orario'
         verbose_name_plural = 'Orari'
 
+def user_directory_path(instance, filename):
+    return 'uploads/users/{0}/{1}'.format(instance.user.username, filename)
+
 class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE,
         primary_key=True, editable=False)
     avatar = models.ImageField(blank = True, null=True,
-        upload_to = 'uploads/users/')
+        upload_to = user_directory_path)
     bio = models.TextField("Breve biografia", null=True, blank=True)
     yes_spam = models.BooleanField(default = False,
         verbose_name = 'Mailing list',
@@ -74,6 +77,28 @@ class Profile(models.Model):
         blank = True, null = True, verbose_name = 'Telefono/i',)
     email_2 = models.EmailField(blank = True, null = True,
         verbose_name = 'Seconda email',)
+    course = models.ManyToManyField(CourseSchedule,
+        blank = True, verbose_name = 'Orari scelti', )
+    course_alt = models.CharField(max_length = 100,
+        blank = True, null = True, verbose_name = 'Altro orario',)
+    course_membership = models.CharField(max_length = 4, choices = COURSE,
+        blank = True, null = True, verbose_name = 'Federazione / Ente sportivo',
+        help_text = 'Solo se si segue un corso')
+    no_course_membership = models.CharField(max_length = 4, choices = NO_COURSE,
+        blank = True, null = True, verbose_name = 'Federazione / Ente sportivo',
+        help_text = 'Solo se non si segue un corso')
+    sign_up = models.FileField(
+        upload_to = user_directory_path,
+        blank = True, null = True, verbose_name = 'Richiesta di tesseramento',
+        )
+    privacy = models.FileField(
+        upload_to = user_directory_path,
+        blank = True, null = True, verbose_name = 'Privacy',
+        )
+    med_cert = models.FileField(
+        upload_to = user_directory_path,
+        blank = True, null = True, verbose_name = 'Certificato medico',
+        )
 
     def get_full_name(self):
         return self.user.get_full_name()
