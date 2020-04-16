@@ -53,6 +53,9 @@ class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE,
         primary_key=True, editable=False)
+    parent = models.ForeignKey(User, on_delete = models.SET_NULL,
+        blank = True, null = True, related_name = 'profile_parent',
+        verbose_name = 'Genitore')
     avatar = models.ImageField(blank = True, null=True,
         upload_to = user_directory_path)
     bio = models.TextField("Breve biografia", null=True, blank=True)
@@ -80,7 +83,7 @@ class Profile(models.Model):
     email_2 = models.EmailField(blank = True, null = True,
         verbose_name = 'Seconda email',)
     course = models.ManyToManyField(CourseSchedule,
-        blank = True, null = True, verbose_name = 'Orari scelti', )
+        blank = True, verbose_name = 'Orari scelti', )
     course_alt = models.CharField(max_length = 100,
         blank = True, null = True, verbose_name = 'Altro orario',
         help_text = "Solo se si è selezionato 'Altro'")
