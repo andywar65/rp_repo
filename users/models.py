@@ -138,7 +138,7 @@ class UserMessage(models.Model):
         verbose_name = 'Soggetto', )
     body = models.TextField(verbose_name = 'Messaggio', )
     attachment = models.FileField(
-        upload_to = 'uploads/users/',
+        upload_to = user_directory_path,
         blank = True, null = True, verbose_name = 'Allegato',
         )
     privacy = models.BooleanField( default=False )
