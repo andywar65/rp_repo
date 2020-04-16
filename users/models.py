@@ -105,6 +105,8 @@ class Profile(models.Model):
         upload_to = user_directory_path,
         blank = True, null = True, verbose_name = 'Certificato medico',
         )
+    is_trusted = models.BooleanField(default = False,
+        verbose_name = 'Persona conosciuta',)
 
     def get_full_name(self):
         return self.user.get_full_name()
