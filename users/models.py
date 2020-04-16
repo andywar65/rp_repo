@@ -86,8 +86,8 @@ class Profile(models.Model):
         blank = True, null = True, verbose_name = 'Federazione / Ente sportivo',
         )
     no_course_membership = models.CharField(max_length = 4, choices = NO_COURSE,
-        blank = True, null = True, verbose_name = 'Federazione / Ente sportivo',
-        help_text = 'Solo se non si segue un corso')
+        null = True, verbose_name = 'Federazione / Ente sportivo',
+        )
     sign_up = models.FileField(
         upload_to = user_directory_path,
         blank = True, null = True, verbose_name = 'Richiesta di tesseramento',

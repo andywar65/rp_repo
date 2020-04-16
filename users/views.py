@@ -13,7 +13,7 @@ from .forms import (RegistrationForm, ContactForm,
     ContactLogForm, FrontAuthenticationForm, FrontPasswordResetForm,
     FrontSetPasswordForm, FrontPasswordChangeForm, ProfileChangeForm,
     ProfileDeleteForm, ProfileChangeRegistryForm, ProfileChangeAddressForm,
-    ProfileChangeCourseForm, )
+    ProfileChangeCourseForm, ProfileChangeNoCourseForm, )
 from .models import User, Profile, CourseSchedule
 
 class GetMixin:
@@ -232,6 +232,19 @@ class ProfileChangeCourseView(LoginRequiredMixin, UpdateView):
         if request.user.id != kwargs['pk']:
             raise Http404("User is not authorized to manage this profile")
         return super(ProfileChangeCourseView, self).get(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return f'/accounts/profile/?submitted={self.request.user.get_full_name()}'
+
+class ProfileChangeNoCourseView(LoginRequiredMixin, UpdateView):
+    model = Profile
+    form_class = ProfileChangeNoCourseForm
+    template_name = 'users/profile_change_no_course.html'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.id != kwargs['pk']:
+            raise Http404("User is not authorized to manage this profile")
+        return super(ProfileChangeNoCourseView, self).get(request, *args, **kwargs)
 
     def get_success_url(self):
         return f'/accounts/profile/?submitted={self.request.user.get_full_name()}'

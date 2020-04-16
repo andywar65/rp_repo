@@ -173,14 +173,25 @@ class ProfileChangeCourseForm(ModelForm):
 
     class Meta:
         model = Profile
-        fields = (
-            'course', 'course_alt', 'course_membership',
+        fields = ( 'course', 'course_alt', 'course_membership',
             'sign_up', 'privacy', 'med_cert', )
         widgets = {
             'sign_up' : SmallClearableFileInput(),
             'privacy' : SmallClearableFileInput(),
             'med_cert' : SmallClearableFileInput(),
             'course': CheckboxSelectMultiple(),
+            }
+
+class ProfileChangeNoCourseForm(ModelForm):
+
+    class Meta:
+        model = Profile
+        fields = ( 'no_course_membership',
+            'sign_up', 'privacy', 'med_cert', )
+        widgets = {
+            'sign_up' : SmallClearableFileInput(),
+            'privacy' : SmallClearableFileInput(),
+            'med_cert' : SmallClearableFileInput(),
             }
 
 class ProfileDeleteForm(forms.Form):
