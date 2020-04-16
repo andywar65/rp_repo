@@ -67,7 +67,7 @@ class ProfileAddChildView(LoginRequiredMixin, FormView):
 
     def get(self, request, *args, **kwargs):
         usr = self.request.user
-        if usr.profile.sector == '0-NO' or not usr.profile.fiscal_code:
+        if usr.profile.sector == '0-NO' or not usr.profile.is_trusted:
             raise Http404("User is not authorized to add children")
         return super(ProfileAddChildView, self).get(request, *args, **kwargs)
 
@@ -182,7 +182,7 @@ class TemplateAccountView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         usr = self.request.user
-        if not usr.profile.sector == '0-NO' and usr.profile.fiscal_code:
+        if not usr.profile.sector == '0-NO' and usr.profile.is_trusted:
             context['can_add_child'] = True
         return context
 
