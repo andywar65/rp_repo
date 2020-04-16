@@ -142,6 +142,13 @@ class TemplateResetDoneView(TemplateView):
 class TemplateAccountView(LoginRequiredMixin, GetMixin, TemplateView):
     template_name = 'users/account.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        usr = self.request.user
+        if not usr.profile.sector == '0-NO' and usr.profile.fiscal_code:
+            context['can_add_child'] = True
+        return context
+
     def get_template_names(self):
         sector = self.request.user.profile.sector
         if sector == '1-YC':
