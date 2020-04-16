@@ -4,7 +4,7 @@ from .views import (FrontLoginView, FrontLogoutView, FrontPasswordResetView,
     TemplateAccountView, FrontPasswordChangeView, FrontPasswordChangeDoneView,
     ProfileChangeView, ProfileDeleteView, TemplateDeletedView,
     ProfileChangeRegistryView, ProfileChangeAddressView, ProfileChangeCourseView,
-    ProfileChangeNoCourseView)
+    ProfileChangeNoCourseView, ProfileAddChildView, )
 
 #namespace is '/accounts/'
 urlpatterns = [
@@ -20,6 +20,8 @@ urlpatterns = [
         name='profile_change_course'),
     path('profile/<int:pk>/change/no_course', ProfileChangeNoCourseView.as_view(),
         name='profile_change_no_course'),
+    path('profile/add_child', ProfileAddChildView.as_view(),
+        name='profile_add_child'),
     path('profile/<int:pk>/delete', ProfileDeleteView.as_view(),
         name='profile_delete'),
     path('profile/deleted', TemplateDeletedView.as_view(),

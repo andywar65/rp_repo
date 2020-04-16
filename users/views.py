@@ -9,11 +9,12 @@ from django.contrib.auth.views import (LoginView, LogoutView, PasswordResetView,
     PasswordResetConfirmView, PasswordChangeView, PasswordChangeDoneView)
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView, UpdateView, CreateView
+from project.utils import generate_unique_username
 from .forms import (RegistrationForm, ContactForm,
     ContactLogForm, FrontAuthenticationForm, FrontPasswordResetForm,
     FrontSetPasswordForm, FrontPasswordChangeForm, ProfileChangeForm,
     ProfileDeleteForm, ProfileChangeRegistryForm, ProfileChangeAddressForm,
-    ProfileChangeCourseForm, ProfileChangeNoCourseForm, )
+    ProfileChangeCourseForm, ProfileChangeNoCourseForm, ProfileAddChildForm)
 from .models import User, Profile, CourseSchedule
 
 def registration_message( username, password ):
@@ -58,6 +59,34 @@ class RegistrationFormView(GetMixin, FormView):
         email = EmailMessage(subject, body, settings.SERVER_EMAIL, mailto)
         email.send()
         return super(RegistrationFormView, self).form_valid(form)
+
+class ProfileAddChildView(LoginRequiredMixin, FormView):
+    form_class = ProfileAddChildForm
+    template_name = 'users/profile_add_child.html'
+    success_url = '/accounts/profile/?child_created=True'
+
+    def get(self, request, *args, **kwargs):
+        usr = self.request.user
+        if usr.profile.sector == '0-NO' or not usr.profile.fiscal_code:
+            raise Http404("User is not authorized to add children")
+        return super(ProfileAddChildView, self).get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        usr = self.request.user
+        child = form.save(commit=False)
+        username = (child.first_name + '.' + child.last_name).lower()
+        child.username = generate_unique_username(username)
+        child.is_active = False
+        child.password = usr.password
+        child.email = usr.email
+        child.save()
+        #we have to create profile since child is an inactive user
+        child_profile = Profile.objects.create(user = child)
+        child_profile.parent = usr
+        child_profile.sector = '1-YC'
+        child_profile.save()
+        return super(ProfileAddChildView, self).form_valid(form)
+
 
 class ContactFormView(GetMixin, FormView):
     form_class = ContactForm
@@ -139,8 +168,16 @@ class FrontPasswordResetConfirmView(PasswordResetConfirmView):
 class TemplateResetDoneView(TemplateView):
     template_name = 'users/reset_done.html'
 
-class TemplateAccountView(LoginRequiredMixin, GetMixin, TemplateView):
+class TemplateAccountView(LoginRequiredMixin, TemplateView):
     template_name = 'users/account.html'
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        if 'submitted' in request.GET:
+            context['submitted'] = request.GET['submitted']
+        if 'child_created' in request.GET:
+            context['child_created'] = request.GET['child_created']
+        return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

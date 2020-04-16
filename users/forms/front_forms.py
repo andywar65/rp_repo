@@ -24,6 +24,16 @@ class RegistrationForm(ModelForm):
         model = User
         fields = ('username', 'email', )
 
+class ProfileAddChildForm(ModelForm):
+    first_name = forms.CharField( label = 'Nome', required = True,
+        widget = forms.TextInput())
+    last_name = forms.CharField( label = 'Cognome', required = True,
+        widget = forms.TextInput())
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', )
+
 class ContactLogForm(ModelForm):
 
     class Meta:

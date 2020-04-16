@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ website.acro }} | Aggiungi figli{%endblock title %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+    <h4><strong>Aggiungi un figlio, {{ user.get_short_name }}</strong></h4>
+    <p>L'utente creato avrà la tua stessa mail e password. Potrai gestirne i
+    dati dal tuo account.</p>
+    <hr class="mb-4">
+    {% if form.errors %}
+      <p class="alert alert-danger" role="alert">
+        Per favore, correggi gli errori qui sotto.
+      </p>
+    {% endif %}
+    <form action="" method="post" novalidate>
+        {% include 'users/profile_includes/name.html' %}
+        {% include 'users/profile_includes/button.html' %}
+      {% csrf_token %}
+    </form>
+  </div>
+</div>
+{% endblock content %}

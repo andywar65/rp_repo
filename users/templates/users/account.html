@@ -13,6 +13,11 @@
       Il profilo di {{ submitted }} è stato modificato con successo!
     </p>
     {% endif %}
+    {% if child_created %}
+    <p class="alert alert-success" role="alert">
+      Un figlio di {{ user.get_full_name }} è stato aggiunto con successo!
+    </p>
+    {% endif %}
     <h4><strong>Account di {{ user.get_full_name }}</strong></h4>
     <p>Il tuo nome utente è <strong>{{ user.username }}</strong> (non si può modificare).
       Qui sotto puoi cambiare i tuoi dati, di cui hai consentito il trattamento
