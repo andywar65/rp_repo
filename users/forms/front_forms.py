@@ -134,7 +134,7 @@ class ProfileChangeRegistryForm(forms.Form):
     fiscal_code = forms.CharField(required=True, label='Codice fiscale',
         validators=[validate_codice_fiscale])
 
-class ProfileChangeAddressForm(forms.Form):
+class ProfileChangeAddressForm(ModelForm):
     fiscal_code = forms.CharField(required=True, label='Codice fiscale',
         validators=[validate_codice_fiscale])
     address = forms.CharField( label = 'Indirizzo', required = True,
@@ -146,24 +146,11 @@ class ProfileChangeAddressForm(forms.Form):
         widget=forms.EmailInput(attrs={'autocomplete': 'email',
             'placeholder': 'you@example.com'}))
 
+    class Meta:
+        model = Profile
+        fields = ('fiscal_code', 'address', 'phone', 'email_2', )
+
 class ProfileChangeCourseForm(ModelForm):
-    #course = forms.ModelMultipleChoiceField(required=True,
-        #label = 'Orari scelti',
-    #widget=forms.CheckboxSelectMultiple(),
-        #queryset = CourseSchedule.objects.all())
-    #course_alt = forms.CharField( label='Altri orari', required = False,
-        #widget = forms.TextInput(),
-        #help_text = "Solo se si è selezionato 'Altro'")
-    #course_membership = forms.CharField( required=True,
-        #label = 'Federazione / Ente sportivo',
-        #widget=forms.Select(choices = COURSE, ),)
-    #sign_up = forms.FileField( required = True,
-        #label = 'Richiesta di tesseramento',
-        #widget = SmallClearableFileInput())
-    #privacy = forms.FileField( required = True,
-        #label = 'Privacy', widget = SmallClearableFileInput())
-    #med_cert = forms.FileField( required = True,
-        #label = 'Certificato medico',widget = SmallClearableFileInput())
 
     def clean(self):
         cd = super().clean()
