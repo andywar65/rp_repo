@@ -7,6 +7,7 @@ from django.core.mail import EmailMessage
 from filebrowser.fields import FileBrowseField
 from filebrowser.base import FileObject
 from .choices import SECTOR, GENDER, COURSE, NO_COURSE
+from .validators import validate_codice_fiscale
 
 class User(AbstractUser):
 
@@ -61,20 +62,21 @@ class Profile(models.Model):
     sector = models.CharField(max_length = 4, choices = SECTOR,
         default = '0-NO', verbose_name = 'Corri con noi?')
     gender = models.CharField(max_length = 1, choices = GENDER,
-        blank = True, null=True, verbose_name = 'Sesso', )
-    date_of_birth = models.DateField( blank=True, null=True,
+        null=True, verbose_name = 'Sesso', )
+    date_of_birth = models.DateField( null=True,
         verbose_name = 'Data di nascita',)
     place_of_birth = models.CharField(max_length = 50,
-        blank = True, null = True, verbose_name = 'Luogo di nascita',)
+        null = True, verbose_name = 'Luogo di nascita',)
     nationality = models.CharField(max_length = 50,
-        blank = True, null = True, verbose_name = 'Nazionalità',)
+        null = True, verbose_name = 'Nazionalità',)
     fiscal_code = models.CharField(max_length = 16,
-        blank = True, null = True, verbose_name = 'Codice fiscale',)
+        null = True, verbose_name = 'Codice fiscale',
+        validators=[validate_codice_fiscale])
     address = models.CharField(max_length = 100,
-        blank = True, null = True, verbose_name = 'Indirizzo',
+        null = True, verbose_name = 'Indirizzo',
         help_text = 'Via/Piazza, civico, CAP, Città',)
     phone = models.CharField(max_length = 50,
-        blank = True, null = True, verbose_name = 'Telefono/i',)
+        null = True, verbose_name = 'Telefono/i',)
     email_2 = models.EmailField(blank = True, null = True,
         verbose_name = 'Seconda email',)
     course = models.ManyToManyField(CourseSchedule,
