@@ -197,7 +197,8 @@ class ProfileChangeView(LoginRequiredMixin, FormView):
     def get_success_url(self):
         return f'/accounts/profile/?submitted={self.request.user.get_full_name()}'
 
-class ProfileChangeRegistryView(LoginRequiredMixin, FormView):
+class ProfileChangeRegistryView(LoginRequiredMixin, UpdateView):
+    model = Profile
     form_class = ProfileChangeRegistryForm
     template_name = 'users/profile_change_registry.html'
 
@@ -205,27 +206,6 @@ class ProfileChangeRegistryView(LoginRequiredMixin, FormView):
         if request.user.id != kwargs['pk']:
             raise Http404("User is not authorized to manage this profile")
         return super(ProfileChangeRegistryView, self).get(request, *args, **kwargs)
-
-    def get_initial(self):
-        initial = super(ProfileChangeRegistryView, self).get_initial()
-        profile = self.request.user.profile
-        initial.update({'gender': profile.gender,
-            'date_of_birth': profile.date_of_birth,
-            'place_of_birth': profile.place_of_birth,
-            'nationality': profile.nationality,
-            'fiscal_code': profile.fiscal_code,
-            })
-        return initial
-
-    def form_valid(self, form):
-        profile = Profile.objects.get(pk = self.request.user.id)
-        profile.gender = form.cleaned_data['gender']
-        profile.date_of_birth = form.cleaned_data['date_of_birth']
-        profile.place_of_birth = form.cleaned_data['place_of_birth']
-        profile.nationality = form.cleaned_data['nationality']
-        profile.fiscal_code = form.cleaned_data['fiscal_code']
-        profile.save()
-        return super(ProfileChangeRegistryView, self).form_valid(form)
 
     def get_success_url(self):
         return f'/accounts/profile/?submitted={self.request.user.get_full_name()}'
@@ -239,25 +219,6 @@ class ProfileChangeAddressView(LoginRequiredMixin, UpdateView):
         if request.user.id != kwargs['pk']:
             raise Http404("User is not authorized to manage this profile")
         return super(ProfileChangeAddressView, self).get(request, *args, **kwargs)
-
-    #def get_initial(self):
-        #initial = super(ProfileChangeAddressView, self).get_initial()
-        #profile = self.request.user.profile
-        #initial.update({'fiscal_code': profile.fiscal_code,
-            #'address': profile.address,
-            #'phone': profile.phone,
-            #'email_2': profile.email_2,
-            #})
-        #return initial
-
-    #def form_valid(self, form):
-        #profile = Profile.objects.get(pk = self.request.user.id)
-        #profile.fiscal_code = form.cleaned_data['fiscal_code']
-        #profile.address = form.cleaned_data['address']
-        #profile.phone = form.cleaned_data['phone']
-        #profile.email_2 = form.cleaned_data['email_2']
-        #profile.save()
-        #return super(ProfileChangeAddressView, self).form_valid(form)
 
     def get_success_url(self):
         return f'/accounts/profile/?submitted={self.request.user.get_full_name()}'

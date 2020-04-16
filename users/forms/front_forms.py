@@ -120,19 +120,24 @@ class ProfileChangeForm(forms.Form):
     sector = forms.CharField( required=True, label='Corri con noi?',
         widget=forms.Select(choices = SECTOR, ),)
 
-class ProfileChangeRegistryForm(forms.Form):
+class ProfileChangeRegistryForm(ModelForm):
     gender = forms.CharField( required=True, label='Sesso',
         widget=forms.Select(choices = GENDER, ),)
     date_of_birth = forms.DateField( input_formats=['%d/%m/%Y'], required=True,
         label='Data di nascita (gg/mm/aaaa)',
         widget=SelectDateWidget(years=range(datetime.now().year ,
         datetime.now().year-100, -1), attrs={'class': 'form-control'}))
-    place_of_birth = forms.CharField( label = 'Luogo di nascita', required = True,
-        widget = forms.TextInput())
+    place_of_birth = forms.CharField( label = 'Luogo di nascita',
+        required = True, widget = forms.TextInput())
     nationality = forms.CharField( label = 'Nazionalità', required = True,
         widget = forms.TextInput())
     fiscal_code = forms.CharField(required=True, label='Codice fiscale',
         validators=[validate_codice_fiscale])
+
+    class Meta:
+        model = Profile
+        fields = ('fiscal_code', 'gender', 'date_of_birth', 'place_of_birth',
+            'nationality')
 
 class ProfileChangeAddressForm(ModelForm):
     fiscal_code = forms.CharField(required=True, label='Codice fiscale',
