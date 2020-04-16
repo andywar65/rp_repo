@@ -1,0 +1,12 @@
+<hr class="mb-4">
+<p>Cambia la tua password{% if user.is_staff %}, vai all' amministrazione{% endif %}
+  oppure effettua il logout
+  (consigliabile farlo sempre alla fine della sessione).</p>
+<a class="btn btn-warning" role="button" href="{% url 'password_change' %}">
+  Cambia la tua password</a>
+{% if user.is_staff %}
+  <a class="btn btn-primary" role="button" href="/admin/">
+    Vai all'amministrazione</a>
+{% endif %}
+<a class="btn btn-danger" role="button" href="{% url 'front_logout' %}">
+  Effettua il logout</a>

@@ -16,14 +16,6 @@ from .forms import (RegistrationForm, ContactForm,
     ProfileChangeCourseForm, ProfileChangeNoCourseForm, )
 from .models import User, Profile, CourseSchedule
 
-class GetMixin:
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        if 'submitted' in request.GET:
-            context['submitted'] = request.GET['submitted']
-        return self.render_to_response(context)
-
 def registration_message( username, password ):
     #TODO have some info in settings
     message = f"""
@@ -41,6 +33,14 @@ def registration_message( username, password ):
         Cambio password: {settings.BASE_URL}/accounts/password_change/
         """
     return message
+
+class GetMixin:
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        if 'submitted' in request.GET:
+            context['submitted'] = request.GET['submitted']
+        return self.render_to_response(context)
 
 class RegistrationFormView(GetMixin, FormView):
     form_class = RegistrationForm

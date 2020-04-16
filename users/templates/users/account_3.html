@@ -17,4 +17,6 @@
   {% endif %}
   <a class="btn btn-danger" role="button" href="/accounts/profile/{{ user.id }}/delete">
     Cancella account</a>
+  {% include "users/account_utils.html" %}
+  {% include "users/account_children.html" %}
 {% endblock account_options %}
