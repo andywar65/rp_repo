@@ -98,6 +98,7 @@ class TemplateAccountView(LoginRequiredMixin, TemplateView):
         usr = self.request.user
         if not usr.profile.sector == '0-NO' and usr.profile.is_trusted:
             context['can_add_child'] = True
+        context['children'] = usr.get_children()
         return context
 
     def get_template_names(self):

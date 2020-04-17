@@ -4,6 +4,31 @@
   questa stessa pagina.</p>
   <a class="btn btn-success" role="button" href="/accounts/profile/add_child">
     Aggiungi figlio/a</a>
+  {% if children %}
+    <hr class="mb-4">
+    {% for child in children %}
+      <h4><strong>Account di {{ child.get_full_name }}</strong></h4>
+      <p>Nome utente: <strong>{{ child.username }}</strong></p>
+      <a class="btn btn-success" role="button" href="/accounts/profile/{{ child.id }}/change/?parent={{ user.id }}">
+        Cambia i dati generali</a>
+      {% if child.profile.gender %}
+        <a class="btn btn-success" role="button" href="/accounts/profile/{{ child.id }}/change/registry">
+          Cambia l'anagrafica</a>
+      {% else %}
+        <a class="btn btn-secondary" role="button" href="/accounts/profile/{{ child.id }}/change/registry">
+          Aggiungi l'anagrafica</a>
+      {% endif %}
+      {% if child.profile.med_cert %}
+        <a class="btn btn-success" role="button" href="/accounts/profile/{{ child.id }}/change/course">
+          Cambia il corso</a>
+      {% else %}
+        <a class="btn btn-secondary" role="button" href="/accounts/profile/{{ child.id }}/change/course">
+          Aggiungi il corso</a>
+      {% endif %}
+      <a class="btn btn-danger" role="button" href="/accounts/profile/{{ child.id }}/delete">
+        Cancella account</a>
+    {% endfor %}
+  {% endif %}
 {% else %}
   <p><a href="/contacts/?subject=Aggiungere figli">Contatta l'amministrazione</a>
     per poter aggiungere eventuali figli.</p>

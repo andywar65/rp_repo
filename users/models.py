@@ -25,7 +25,7 @@ class User(AbstractUser):
             return self.username
 
     def get_children(self):
-        return User.objects.filter(profile_parent = self.id)
+        return User.objects.filter(profile__parent_id = self.id)
 
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
