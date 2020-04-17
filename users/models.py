@@ -24,6 +24,9 @@ class User(AbstractUser):
         else:
             return self.username
 
+    def get_children(self):
+        return User.objects.filter(profile_parent = self.id)
+
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
         if self.is_active:
