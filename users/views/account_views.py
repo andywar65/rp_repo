@@ -2,17 +2,12 @@ from django.shortcuts import render
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.http import Http404
-from django.urls import reverse
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import (LoginView, LogoutView, PasswordResetView,
-    PasswordResetConfirmView, PasswordChangeView, PasswordChangeDoneView)
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView, UpdateView, CreateView
 from project.utils import generate_unique_username
-from users.forms import (RegistrationForm,
-    FrontAuthenticationForm, FrontPasswordResetForm,
-    FrontSetPasswordForm, FrontPasswordChangeForm, ProfileChangeForm,
+from users.forms import (RegistrationForm, ProfileChangeForm,
     ProfileDeleteForm, ProfileChangeRegistryForm, ProfileChangeAddressForm,
     ProfileChangeCourseForm, ProfileChangeNoCourseForm, ProfileAddChildForm)
 from users.models import User, Profile, CourseSchedule
@@ -87,40 +82,6 @@ class ProfileAddChildView(LoginRequiredMixin, FormView):
         child_profile.save()
         return super(ProfileAddChildView, self).form_valid(form)
 
-class FrontLoginView(LoginView):
-    template_name = 'users/front_login.html'
-    form_class = FrontAuthenticationForm
-
-    def get_redirect_url(self):
-        """Avoid going from login to logout and other ambiguous situations"""
-        redirect_to = super(FrontLoginView, self).get_redirect_url()
-        if redirect_to == reverse('front_logout'):
-            return reverse('profile')
-        elif redirect_to == reverse('password_reset_done'):
-            return reverse('profile')
-        elif redirect_to == reverse('profile_deleted'):
-            return reverse('profile')
-        elif redirect_to == reverse('registration'):
-            return reverse('profile')
-        return redirect_to
-
-class FrontLogoutView(LogoutView):
-    template_name = 'users/front_logout.html'
-
-class FrontPasswordResetView(PasswordResetView):
-    template_name = 'users/reset_password.html'
-    form_class = FrontPasswordResetForm
-
-class TemplateResetView(TemplateView):
-    template_name = 'users/reset_password_done.html'
-
-class FrontPasswordResetConfirmView(PasswordResetConfirmView):
-    template_name = 'users/reset_password_confirm.html'
-    form_class = FrontSetPasswordForm
-
-class TemplateResetDoneView(TemplateView):
-    template_name = 'users/reset_done.html'
-
 class TemplateAccountView(LoginRequiredMixin, TemplateView):
     template_name = 'users/account.html'
 
@@ -148,13 +109,6 @@ class TemplateAccountView(LoginRequiredMixin, TemplateView):
         elif sector == '3-FI':
             return ['users/account_3.html']
         return super(TemplateAccountView, self).get_template_names()
-
-class FrontPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
-    template_name = 'users/password_change.html'
-    form_class = FrontPasswordChangeForm
-
-class FrontPasswordChangeDoneView(LoginRequiredMixin, PasswordChangeDoneView):
-    template_name = 'users/password_change_done.html'
 
 class ProfileChangeView(LoginRequiredMixin, FormView):
     form_class = ProfileChangeForm
