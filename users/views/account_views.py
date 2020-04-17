@@ -10,12 +10,12 @@ from django.contrib.auth.views import (LoginView, LogoutView, PasswordResetView,
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView, UpdateView, CreateView
 from project.utils import generate_unique_username
-from .forms import (RegistrationForm, ContactForm,
-    ContactLogForm, FrontAuthenticationForm, FrontPasswordResetForm,
+from users.forms import (RegistrationForm,
+    FrontAuthenticationForm, FrontPasswordResetForm,
     FrontSetPasswordForm, FrontPasswordChangeForm, ProfileChangeForm,
     ProfileDeleteForm, ProfileChangeRegistryForm, ProfileChangeAddressForm,
     ProfileChangeCourseForm, ProfileChangeNoCourseForm, ProfileAddChildForm)
-from .models import User, Profile, CourseSchedule
+from users.models import User, Profile, CourseSchedule
 
 def registration_message( username, password ):
     #TODO have some info in settings
@@ -86,53 +86,6 @@ class ProfileAddChildView(LoginRequiredMixin, FormView):
         child_profile.sector = '1-YC'
         child_profile.save()
         return super(ProfileAddChildView, self).form_valid(form)
-
-
-class ContactFormView(GetMixin, FormView):
-    form_class = ContactForm
-    template_name = 'users/message.html'
-    success_url = '/contacts?submitted=True'
-
-    def get_initial(self):
-        initial = super(ContactFormView, self).get_initial()
-        if 'subject' in self.request.GET:
-            initial.update({'subject': self.request.GET['subject']})
-        return initial
-
-    def get_form_class(self):
-        if self.request.user.is_authenticated:
-            return ContactLogForm
-        return super(ContactFormView, self).get_form_class()
-
-    def get_template_names(self):
-        if self.request.user.is_authenticated:
-            return 'users/message_log.html'
-        return super(ContactFormView, self).get_template_names()
-
-    def form_valid(self, form):
-        message = form.save(commit=False)
-        if self.request.user.is_authenticated:
-            message.user = self.request.user
-            message.email = self.request.user.email
-            if 'recipient' in self.request.GET:
-                try:
-                    recip = User.objects.get(id=self.request.GET['recipient'])
-                    message.recipient = recip.email
-                except:
-                    pass
-        message.save()
-        if not message.recipient:
-            message.recipient = settings.DEFAULT_RECIPIENT
-        subject = message.subject
-        msg = (message.body + '\n\nDa: '+ message.get_full_name() +
-            ' (' + message.get_email() + ')')
-        mailto = [message.recipient, ]
-        email = EmailMessage(subject, msg, settings.SERVER_EMAIL,
-            mailto)
-        if message.attachment:
-            email.attach_file(message.attachment.path)
-        email.send()
-        return super(ContactFormView, self).form_valid(form)
 
 class FrontLoginView(LoginView):
     template_name = 'users/front_login.html'

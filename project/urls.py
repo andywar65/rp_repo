@@ -21,7 +21,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import RedirectView
 from filebrowser.sites import site
-from users import views as user_views
+from users.views import RegistrationFormView, ContactFormView
 from pages.views import HomeTemplateView
 from . import views
 
@@ -31,9 +31,9 @@ admin.site.site_title = 'Amministrazione ' + settings.WEBSITE_NAME
 urlpatterns = [
     path('admin/filebrowser/', site.urls),
     path('admin/', admin.site.urls),
-    path('registration/', user_views.RegistrationFormView.as_view(),
+    path('registration/', RegistrationFormView.as_view(),
         name='registration'),
-    path('contacts/', user_views.ContactFormView.as_view(), name='contacts'),
+    path('contacts/', ContactFormView.as_view(), name='contacts'),
     path('accounts/', include('users.urls')),
     path('search/', views.search_results, name='search_results'),
     path('', HomeTemplateView.as_view()),
