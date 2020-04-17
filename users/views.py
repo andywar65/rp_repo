@@ -233,8 +233,7 @@ class ProfileChangeView(LoginRequiredMixin, FormView):
         profile.avatar = form.cleaned_data['avatar']
         profile.bio = form.cleaned_data['bio']
         profile.yes_spam = form.cleaned_data['yes_spam']
-        if profile.is_trusted:
-            profile.sector = form.cleaned_data['sector']
+        profile.sector = form.cleaned_data['sector']
         user.save()
         profile.save()
         return super(ProfileChangeView, self).form_valid(form)
