@@ -83,20 +83,16 @@ class ProfileAddChildView(LoginRequiredMixin, FormView):
 class TemplateAccountView(LoginRequiredMixin, TemplateView):
     template_name = 'users/account.html'
 
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        if 'submitted' in request.GET:
-            context['submitted'] = request.GET['submitted']
-        if 'child_created' in request.GET:
-            context['child_created'] = request.GET['child_created']
-        return self.render_to_response(context)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         usr = self.request.user
         if not usr.profile.sector == '0-NO' and usr.profile.is_trusted:
             context['can_add_child'] = True
         context['children'] = usr.get_children()
+        if 'submitted' in self.request.GET:
+            context['submitted'] = self.request.GET['submitted']
+        if 'child_created' in self.request.GET:
+            context['child_created'] = self.request.GET['child_created']
         return context
 
     def get_template_names(self):
