@@ -10,7 +10,7 @@ from .views import (FrontLoginView, FrontLogoutView, FrontPasswordResetView,
 urlpatterns = [
     path('profile/', TemplateAccountView.as_view(),
         name='profile'),
-    path('profile/<int:pk>/change', ProfileChangeView.as_view(),
+    path('profile/<int:pk>/change/', ProfileChangeView.as_view(),
         name='profile_change'),
     path('profile/<int:pk>/change/registry', ProfileChangeRegistryView.as_view(),
         name='profile_change_registry'),

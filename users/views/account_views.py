@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.http import Http404
@@ -116,24 +116,28 @@ class ProfileChangeView(LoginRequiredMixin, FormView):
     template_name = 'users/profile_change.html'
 
     def get(self, request, *args, **kwargs):
-        if request.user.id != kwargs['pk']:
+        if 'parent' in request.GET:
+            child = get_object_or_404(Profile, user_id = kwargs['pk'],
+                parent_id = request.user.id)
+        elif request.user.id != kwargs['pk']:
             raise Http404("User is not authorized to manage this profile")
         return super(ProfileChangeView, self).get(request, *args, **kwargs)
 
     def get_initial(self):
+        user = get_object_or_404(User, id = self.kwargs['pk'])
         initial = super(ProfileChangeView, self).get_initial()
-        initial.update({'first_name': self.request.user.first_name,
-            'last_name': self.request.user.last_name,
-            'email': self.request.user.email,
-            'avatar': self.request.user.profile.avatar,
-            'bio': self.request.user.profile.bio,
-            'yes_spam': self.request.user.profile.yes_spam,
-            'sector': self.request.user.profile.sector,
+        initial.update({'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'avatar': user.profile.avatar,
+            'bio': user.profile.bio,
+            'yes_spam': user.profile.yes_spam,
+            'sector': user.profile.sector,
             })
         return initial
 
     def form_valid(self, form):
-        user = User.objects.get(id = self.request.user.id )
+        user = get_object_or_404(User, id = self.kwargs['pk'])
         profile = Profile.objects.get(pk = user.id)
         user.first_name = form.cleaned_data['first_name']
         user.last_name = form.cleaned_data['last_name']
@@ -147,7 +151,8 @@ class ProfileChangeView(LoginRequiredMixin, FormView):
         return super(ProfileChangeView, self).form_valid(form)
 
     def get_success_url(self):
-        return f'/accounts/profile/?submitted={self.request.user.get_full_name()}'
+        user = get_object_or_404(User, id = self.kwargs['pk'])
+        return f'/accounts/profile/?submitted={user.get_full_name()}'
 
 class ProfileChangeRegistryView(LoginRequiredMixin, UpdateView):
     model = Profile

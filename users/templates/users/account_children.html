@@ -9,7 +9,7 @@
     {% for child in children %}
       <h4><strong>Account di {{ child.get_full_name }}</strong></h4>
       <p>Nome utente: <strong>{{ child.username }}</strong></p>
-      <a class="btn btn-success" role="button" href="/accounts/profile/{{ child.id }}/change/?parent={{ user.id }}">
+      <a class="btn btn-success" role="button" href="/accounts/profile/{{ child.id }}/change?parent={{ user.id }}">
         Cambia i dati generali</a>
       {% if child.profile.gender %}
         <a class="btn btn-success" role="button" href="/accounts/profile/{{ child.id }}/change/registry">
