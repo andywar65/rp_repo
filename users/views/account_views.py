@@ -35,11 +35,11 @@ class RegistrationFormView(FormView):
     template_name = 'users/registration.html'
     success_url = '/registration?submitted=True'
 
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        if 'submitted' in request.GET:
-            context['submitted'] = request.GET['submitted']
-        return self.render_to_response(context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'submitted' in self.request.GET:
+            context['submitted'] = self.request.GET['submitted']
+        return context
 
     def form_valid(self, form):
         user = form.save(commit=False)
