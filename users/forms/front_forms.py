@@ -1,13 +1,12 @@
 from datetime import datetime
 from django import forms
-from django.contrib.auth import (password_validation, )
 from django.contrib.auth.forms import UsernameField
 from django.forms import ModelForm
 from django.forms.widgets import SelectDateWidget, CheckboxSelectMultiple
 from captcha.fields import ReCaptchaField
-from users.models import (Profile, User, UserMessage, CourseSchedule, )
+from users.models import (Profile, User, )
 from users.widgets import SmallClearableFileInput
-from users.choices import SECTOR, GENDER, COURSE, NO_COURSE
+from users.choices import SECTOR
 
 class RegistrationForm(ModelForm):
     username = UsernameField(label = 'Nome utente', required = True,
