@@ -30,18 +30,16 @@ def registration_message( username, password ):
         """
     return message
 
-class GetMixin:
+class RegistrationFormView(FormView):
+    form_class = RegistrationForm
+    template_name = 'users/registration.html'
+    success_url = '/registration?submitted=True'
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         if 'submitted' in request.GET:
             context['submitted'] = request.GET['submitted']
         return self.render_to_response(context)
-
-class RegistrationFormView(GetMixin, FormView):
-    form_class = RegistrationForm
-    template_name = 'users/registration.html'
-    success_url = '/registration?submitted=True'
 
     def form_valid(self, form):
         user = form.save(commit=False)
