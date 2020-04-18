@@ -11,7 +11,7 @@ from users.forms import (RegistrationForm, ProfileChangeForm,
     ProfileDeleteForm, ProfileChangeRegistryForm, ProfileChangeAddressForm,
     ProfileChangeCourseForm, ProfileChangeNoCourseForm, ProfileAddChildForm,
     ProfileChangeChildForm, ProfileReleaseForm)
-from users.models import User, Profile, CourseSchedule
+from users.models import User, Profile, CourseSchedule, MemberPayment
 
 def registration_message( username, password ):
     #TODO have some info in settings
@@ -193,6 +193,7 @@ class ProfileChangeCourseView(LoginRequiredMixin, UpdateView):
         elif self.request.user.id != self.kwargs['pk']:
             raise Http404("User is not authorized to manage this profile")
         context['name'] = self.object.get_full_name()
+        context['payments'] = MemberPayment.objects.filter(member_id = self.object.pk)
         return context
 
     def get_success_url(self):
@@ -203,10 +204,12 @@ class ProfileChangeNoCourseView(LoginRequiredMixin, UpdateView):
     form_class = ProfileChangeNoCourseForm
     template_name = 'users/profile_change_no_course.html'
 
-    def get(self, request, *args, **kwargs):
-        if request.user.id != kwargs['pk']:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.id != self.kwargs['pk']:
             raise Http404("User is not authorized to manage this profile")
-        return super(ProfileChangeNoCourseView, self).get(request, *args, **kwargs)
+        context['payments'] = MemberPayment.objects.filter(member_id = self.object.pk)
+        return context
 
     def get_success_url(self):
         return f'/accounts/profile/?submitted={self.object.get_full_name()}'

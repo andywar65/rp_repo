@@ -7,8 +7,9 @@
 <div class="row">
   <div class="col-md-2"></div>
   <div class="col-md-8">
-    <h4><strong>Modifica il corso, {{ user.get_short_name }}</strong></h4>
+    <h4><strong>Modifica il tesseramento, {{ user.get_short_name }}</strong></h4>
     <hr class="mb-4">
+    {% include "users/membership.html "%}
     {% if form.errors %}
       <p class="alert alert-danger" role="alert">
         Per favore, correggi gli errori qui sotto.
