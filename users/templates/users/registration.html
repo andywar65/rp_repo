@@ -18,13 +18,17 @@
         quanto indicato nella <a href="/docs/privacy/">Informativa della privacy.</a>
         </p>
       </div>
-      {% endif %}
-      <p>Questo modulo serve per iscriversi a {{ website.name }}. Gli iscritti
-        hanno accesso a contenuti extra e possono interagire con il sito.
-        Se vuoi semplicemente inviarci un messaggio, usa quest'altro
-        <a href="/contacts/">modulo.</a></p>
-      <p>Se invece sei già registrato, effettua il
-        <a href="/accounts/login/?next=/registration">login.</a></p>
+      {% else %}
+      <p>Questo modulo può servire a varie cose:</p>
+      <ul>
+        <li>Iscriversi a Rifondazione Podistica per correre con noi</li>
+        <li>Registrarsi per iscrivere i propri figli
+          (NON corri con noi ma gestisci i dati dei figli)</li>
+        <li>Registrarsi al sito di Rifondazione Podistica
+          (NON corri con noi e basta, ma puoi interagire con il sito)</li>
+      </ul>
+      <p>Se vuoi semplicemente inviarci un messaggio, usa
+        <a href="/contacts/">quest'altro modulo.</a></p>
         {% if form.errors %}
           <p class="alert alert-danger" role="alert">
             Per favore, correggi gli errori qui sotto.
@@ -52,6 +56,7 @@
         {% include 'users/profile_includes/button.html' %}
         {% csrf_token %}
       </form>
+      {% endif %}
   </div>
 </div>
 {% endblock content %}

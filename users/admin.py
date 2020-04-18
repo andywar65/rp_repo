@@ -26,6 +26,6 @@ class MemberPaymentInline(admin.TabularInline):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('get_full_name', 'is_trusted')
+    list_display = ('get_full_name', 'is_trusted', 'parent')
     list_editable = ('is_trusted', )
     inlines = [ MemberPaymentInline, ]
