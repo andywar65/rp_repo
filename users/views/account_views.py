@@ -282,8 +282,15 @@ class ProfileReleaseView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         user = User.objects.get(id = self.kwargs['pk'] )
         user.is_active = True
+        password = User.objects.make_random_password()
+        user.password = make_password(password)
         user.save()
         profile = Profile.objects.get(pk = user.id)
         profile.parent = None
         profile.save()
+        subject = f'Credenziali di accesso a {settings.WEBSITE_ACRO}'
+        body = registration_message(user.username, password)
+        mailto = [ user.email, ]
+        email = EmailMessage(subject, body, settings.SERVER_EMAIL, mailto)
+        email.send()
         return super(ProfileReleaseView, self).form_valid(form)
