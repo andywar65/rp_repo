@@ -12,3 +12,19 @@ NO_COURSE = [('UNA', 'UISP non agonistico'),
     ('UA', 'UISP agonistico'),
     ('FID', 'FIDAL agonistico'),
     ]
+
+MC_STATE = [
+    ('0-NF', 'Manca il file'),
+    ('1-VF', 'Verifica file'),
+    ('2-RE', 'Regolare'),
+    ('6-IS', 'In scadenza'),
+    ('3-SV', 'Scaduto, da verificare'),
+    ('4-SI', 'Scaduto, inviare notifica'),
+    ('5-NI', 'Scaduto, notifica inviata'),
+    ]
+
+SETTLED = [
+    ('VI', 'Verifica importo totale'),
+    ('YES', 'A posto'),
+    ('NO', 'No!'),
+    ]

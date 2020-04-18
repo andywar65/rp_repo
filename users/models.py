@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.mail import EmailMessage
 from filebrowser.fields import FileBrowseField
 from filebrowser.base import FileObject
-from .choices import SECTOR, GENDER, COURSE, NO_COURSE
+from .choices import *
 from .validators import validate_codice_fiscale
 
 class User(AbstractUser):
@@ -31,7 +31,7 @@ class User(AbstractUser):
     def is_adult(self):
         if not self.profile.date_of_birth:
             return False
-        age = ( date.today() - self.profile.date_of_birth).days
+        age = ( date.today() - self.profile.date_of_birth ).days
         if age >= 18*365:
             return True
         return False
@@ -118,7 +118,19 @@ class Profile(models.Model):
         blank = True, null = True, verbose_name = 'Certificato medico',
         )
     is_trusted = models.BooleanField(default = False,
-        verbose_name = 'Persona conosciuta',)
+        verbose_name = 'Di fiducia',)
+    membership = models.CharField(max_length = 50,
+        blank = True, null = True, verbose_name = 'Tessera',)
+    mc_expiry = models.DateField( blank=True, null=True,
+        verbose_name = 'Scadenza CM/CMA',)
+    mc_state = models.CharField(max_length = 4, choices = MC_STATE,
+        verbose_name = 'Stato del CM/CMA',
+        blank = True, null = True, )
+    total_amount = models.FloatField( default = 0.00,
+        verbose_name = 'Importo totale')
+    settled = models.CharField(max_length = 4, choices = SETTLED,
+        blank=True, null=True,
+        verbose_name = 'In regola?',)
 
     def get_full_name(self):
         return self.user.get_full_name()
