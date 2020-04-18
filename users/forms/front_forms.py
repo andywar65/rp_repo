@@ -32,7 +32,7 @@ class ProfileAddChildForm(ModelForm):
         model = User
         fields = ('first_name', 'last_name', )
 
-class ProfileChangeForm(forms.Form):
+class ProfileChangeForm(ModelForm):
     avatar = forms.FileField( required = False, widget = SmallClearableFileInput())
     first_name = forms.CharField( label = 'Nome', required = True,
         widget = forms.TextInput())
@@ -47,6 +47,10 @@ class ProfileChangeForm(forms.Form):
         help_text = "Vuoi ricevere notifiche sui nuovi articoli ed eventi?")
     sector = forms.CharField( required=True, label='Corri con noi?',
         widget=forms.Select(choices = SECTOR, ),)
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email')
 
 class ProfileChangeRegistryForm(ModelForm):
     date_of_birth = forms.DateField( input_formats=['%d/%m/%Y'], required=True,
