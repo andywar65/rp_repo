@@ -10,14 +10,15 @@
     <h4><strong>Contatto</strong></h4>
       {% if submitted %}
       <div class="alert alert-success" role="alert">
-        <p><strong>Il tuo messaggio è stato inoltrato con successo, grazie!</strong></p>
+        <p><strong>Grazie {{ user.get_short_name }}, il tuo messaggio è stato
+          inoltrato con successo!</strong></p>
         <p>A breve riceverai una risposta via mail.
         Non è un processo automatico, per cui può richiedere tempo. Nel frattempo
         ne puoi inviare un altro</p>
       </div>
+      {% else %}
+        <p>Ciao {{ user.get_short_name }}, scrivi qui sotto il tuo messaggio e poi invia.</p>
       {% endif %}
-
-      <p>Ciao {{ user.get_short_name }}, scrivi qui sotto il tuo messaggio e poi invia.</p>
       {% if form.errors %}
         <p class="alert alert-danger" role="alert">
           Per favore, correggi gli errori qui sotto.
