@@ -110,16 +110,13 @@ class ProfileChangeView(LoginRequiredMixin, UpdateView):
     form_class = ProfileChangeForm
     template_name = 'users/profile_change.html'
 
-    def get(self, request, *args, **kwargs):
+    def get_initial(self):
         #if 'parent' in request.GET:
             #child = get_object_or_404(Profile, user_id = kwargs['pk'],
                 #parent_id = request.user.id)
         #elif request.user.id != kwargs['pk']:
-        if request.user.id != kwargs['pk']:
+        if self.request.user.id != self.kwargs['pk']:
             raise Http404("User is not authorized to manage this profile")
-        return super(ProfileChangeView, self).get(request, *args, **kwargs)
-
-    def get_initial(self):
         initial = super(ProfileChangeView, self).get_initial()
         initial.update({
             'avatar': self.object.profile.avatar,
