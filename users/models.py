@@ -145,8 +145,21 @@ class Profile(models.Model):
         return self.user.get_full_name()
 
     class Meta:
-        verbose_name = 'Profilo'
-        verbose_name_plural = 'Profili'
+        verbose_name = 'Iscritto'
+        verbose_name_plural = 'Iscritti'
+
+class MemberPayment(models.Model):
+    member = models.ForeignKey(Profile, on_delete = models.CASCADE,
+        blank = True, null = True, related_name='member_payments')
+    date = models.DateField( blank=True, null=True, verbose_name = 'Data')
+    amount = models.FloatField( default = 0.00, verbose_name = 'Importo')
+
+    def __str__(self):
+        return 'Pagamento - %s' % (self.id)
+
+    class Meta:
+        verbose_name = 'Pagamento'
+        verbose_name_plural = 'Pagamenti'
 
 class UserMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,

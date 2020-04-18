@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import (User, Profile, UserMessage, CourseSchedule)
+from .models import (User, Profile, UserMessage, CourseSchedule, MemberPayment)
 
 class UserAdmin(UserAdmin):
     list_display = ('get_full_name', 'is_staff', 'is_active', 'is_superuser')
@@ -18,6 +18,11 @@ class UserMessageAdmin(admin.ModelAdmin):
 class CourseScheduleAdmin(admin.ModelAdmin):
     list_display = ('full', 'abbrev')
     ordering = ('abbrev', )
+
+class MemberPaymentInline(admin.TabularInline):
+    model = MemberPayment
+    fields = ('date', 'amount')
+    extra = 0
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
