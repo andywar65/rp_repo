@@ -25,8 +25,11 @@
         <a class="btn btn-secondary" role="button" href="/accounts/profile/{{ child.id }}/change/course?parent={{ user.id }}">
           Aggiungi il corso</a>
       {% endif %}
-      <a class="btn btn-danger" role="button" href="/accounts/profile/{{ child.id }}/delete?parent={{ user.id }}">
+      <a class="btn btn-danger" role="button" href="/accounts/profile/{{ child.id }}/delete_child">
         Cancella account</a>
+      {% if not forloop.last %}
+        <hr class="mb-4">
+      {% endif %}
     {% endfor %}
   {% endif %}
 {% else %}
