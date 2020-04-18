@@ -294,3 +294,6 @@ class ProfileReleaseView(LoginRequiredMixin, FormView):
         email = EmailMessage(subject, body, settings.SERVER_EMAIL, mailto)
         email.send()
         return super(ProfileReleaseView, self).form_valid(form)
+
+class TemplateReleasedView(TemplateView):
+    template_name = 'users/profile_released.html'

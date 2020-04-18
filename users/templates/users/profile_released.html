@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ website.acro }} | Account svincolato{%endblock title %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+    <h4><strong>Account svincolato</strong></h4>
+    <div class="alert alert-success" role="alert">
+      <p><strong>L'account del figlio è stato svincolato con successo!</strong></p>
+      <p>A breve riceverà una mail con le credenziali di accesso (meglio
+        controllare anche nello spam). Digli di effettuare il login e cambiare
+        la password generata automaticamente. Se non consente al trattamento dei
+        dati secondo quanto indicato nella
+        <a href="/docs/privacy/">Informativa della privacy</a> deve cancellare
+        l'account.
+      </p>
+    </div>
+    <hr class="mb-4">
+  </div>
+</div>
+
+{% endblock content %}
