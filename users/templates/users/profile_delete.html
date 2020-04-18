@@ -7,24 +7,33 @@
 <div class="row">
   <div class="col-md-2"></div>
   <div class="col-md-8">
-    <h4><strong>Cancella il tuo profilo, {{ user.get_short_name }}</strong></h4>
-    <p>Sei sicuro di voler cancellare il tuo profilo? Questa operazione
-      è irreversibile.</p>
-    <hr class="mb-4">
-    {% if form.errors %}
-      <p class="alert alert-danger" role="alert">
-        Per favore, correggi gli errori qui sotto.
-      </p>
-    {% endif %}
-    <form action="" method="post" enctype="multipart/form-data" novalidate>
-      <div class="row">
-        <div class="col-md-6 mb-3">
-            {{ form.delete|as_crispy_field }}
+    {% if not_possible %}
+    <h4><strong>Aspetta un attimo, {{ user.get_short_name }}</strong></h4>
+    <p class="alert alert-danger" role="alert">
+      Per cancellare il tuo profilo devi prima cancellare quello dei figli
+      (oppure svincolarli se maggiorenni), dato che solo tu puoi gestire il
+      loro account.
+    </p>
+    {% else %}
+      <h4><strong>Cancella il tuo profilo, {{ user.get_short_name }}</strong></h4>
+      <p>Sei sicuro di voler cancellare il tuo profilo? Questa operazione
+        è irreversibile.</p>
+      <hr class="mb-4">
+      {% if form.errors %}
+        <p class="alert alert-danger" role="alert">
+          Per favore, correggi gli errori qui sotto.
+        </p>
+      {% endif %}
+      <form action="" method="post" enctype="multipart/form-data" novalidate>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+              {{ form.delete|as_crispy_field }}
+          </div>
         </div>
-      </div>
-        {% include 'users/profile_includes/button.html' %}
-      {% csrf_token %}
-    </form>
+          {% include 'users/profile_includes/button.html' %}
+        {% csrf_token %}
+      </form>
+    {% endif %}
   </div>
 </div>
 {% endblock content %}

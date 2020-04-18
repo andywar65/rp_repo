@@ -216,10 +216,14 @@ class ProfileDeleteView(LoginRequiredMixin, FormView):
     template_name = 'users/profile_delete.html'
     success_url = '/accounts/profile/deleted'
 
-    def get(self, request, *args, **kwargs):
-        if request.user.id != kwargs['pk']:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.id != self.kwargs['pk']:
             raise Http404("User is not authorized to manage this profile")
-        return super(ProfileDeleteView, self).get(request, *args, **kwargs)
+        children = Profile.objects.filter( parent_id = self.request.user.id )
+        if children:
+            context['not_possible'] = True
+        return context
 
     def form_valid(self, form):
         user = User.objects.get(id = self.request.user.id )
