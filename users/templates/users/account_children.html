@@ -13,21 +13,32 @@
         href="/accounts/profile/{{ child.id }}/change?parent={{ user.id }}">
         Cambia i dati generali</a>
       {% if child.profile.gender %}
-        <a class="btn btn-success" role="button" href="/accounts/profile/{{ child.id }}/change/registry?parent={{ user.id }}">
+        <a class="btn btn-success" role="button"
+          href="/accounts/profile/{{ child.id }}/change/registry?parent={{ user.id }}">
           Cambia l'anagrafica</a>
       {% else %}
-        <a class="btn btn-secondary" role="button" href="/accounts/profile/{{ child.id }}/change/registry?parent={{ user.id }}">
+        <a class="btn btn-secondary" role="button"
+          href="/accounts/profile/{{ child.id }}/change/registry?parent={{ user.id }}">
           Aggiungi l'anagrafica</a>
       {% endif %}
       {% if child.profile.med_cert %}
-        <a class="btn btn-success" role="button" href="/accounts/profile/{{ child.id }}/change/course?parent={{ user.id }}">
+        <a class="btn btn-success" role="button"
+          href="/accounts/profile/{{ child.id }}/change/course?parent={{ user.id }}">
           Cambia il corso</a>
       {% else %}
-        <a class="btn btn-secondary" role="button" href="/accounts/profile/{{ child.id }}/change/course?parent={{ user.id }}">
+        <a class="btn btn-secondary" role="button"
+          href="/accounts/profile/{{ child.id }}/change/course?parent={{ user.id }}">
           Aggiungi il corso</a>
       {% endif %}
-      <a class="btn btn-danger" role="button" href="/accounts/profile/{{ child.id }}/delete_child">
-        Cancella account</a>
+      {% if child.is_adult %}
+        <a class="btn btn-warning" role="button"
+          href="/accounts/profile/{{ child.id }}/release">
+          Svincola</a>
+      {% else %}
+        <a class="btn btn-danger" role="button"
+          href="/accounts/profile/{{ child.id }}/delete_child">
+          Cancella account</a>
+      {% endif %}
       {% if not forloop.last %}
         <hr class="mb-4">
       {% endif %}

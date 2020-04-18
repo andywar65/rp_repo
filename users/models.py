@@ -1,4 +1,5 @@
 import os
+from datetime import date, timedelta
 from PIL import Image
 from django.conf import settings
 from django.db import models
@@ -26,6 +27,14 @@ class User(AbstractUser):
 
     def get_children(self):
         return User.objects.filter(profile__parent_id = self.id)
+
+    def is_adult(self):
+        if not self.profile.date_of_birth:
+            return False
+        age = ( date.today() - self.profile.date_of_birth).days
+        if age >= 18*365:
+            return True
+        return False
 
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
