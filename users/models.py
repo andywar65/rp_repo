@@ -36,6 +36,12 @@ class User(AbstractUser):
             return True
         return False
 
+    def __str__(self):
+        if self.first_name and self.last_name:
+            return self.first_name + ' ' + self.last_name
+        else:
+            return self.username
+
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
         if self.is_active:
