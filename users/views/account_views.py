@@ -261,3 +261,6 @@ class ProfileDeleteChildView(LoginRequiredMixin, FormView):
 
 class TemplateDeletedView(TemplateView):
     template_name = 'users/profile_deleted.html'
+
+class TemplateDeletedChildView(TemplateView):
+    template_name = 'users/profile_deleted_child.html'

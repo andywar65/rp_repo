@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ website.acro }} | Account cancellato{%endblock title %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+    <h4><strong>Account cancellato</strong></h4>
+    <p class="alert alert-success" role="alert">
+      L'account di un figlio è stato cancellato. Grazie comunque per averlo
+      iscritto a {{ website.name }}!
+    </p>
+    <hr class="mb-4">
+  </div>
+</div>
+
+{% endblock content %}
