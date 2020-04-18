@@ -236,5 +236,28 @@ class ProfileDeleteView(LoginRequiredMixin, FormView):
         profile.delete()
         return super(ProfileDeleteView, self).form_valid(form)
 
+class ProfileDeleteChildView(LoginRequiredMixin, FormView):
+    form_class = ProfileDeleteForm
+    template_name = 'users/profile_delete_child.html'
+    success_url = '/accounts/profile/deleted_child'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        child = get_object_or_404(Profile, user_id = self.kwargs['pk'],
+            parent_id = self.request.user.id)
+        context['name'] = child.get_full_name()
+        return context
+
+    def form_valid(self, form):
+        user = User.objects.get(id = self.kwargs['pk'] )
+        user.is_active = False
+        user.first_name = ''
+        user.last_name = ''
+        user.email = ''
+        user.save()
+        profile = Profile.objects.get(pk = user.id)
+        profile.delete()
+        return super(ProfileDeleteChildView, self).form_valid(form)
+
 class TemplateDeletedView(TemplateView):
     template_name = 'users/profile_deleted.html'
