@@ -126,5 +126,9 @@ class ProfileChangeNoCourseForm(ModelForm):
             }
 
 class ProfileDeleteForm(forms.Form):
-    delete = forms.BooleanField( label="Cancella il profilo", required = True,
-        help_text = """Seleziona per cancellare il profilo.""")
+    delete = forms.BooleanField( label="Cancella l'account", required = True,
+        help_text = """Seleziona e invia.""")
+
+class ProfileReleaseForm(forms.Form):
+    release = forms.BooleanField( label="Svincola l'account", required = True,
+        help_text = """Seleziona e invia.""")

@@ -10,7 +10,7 @@ from project.utils import generate_unique_username
 from users.forms import (RegistrationForm, ProfileChangeForm,
     ProfileDeleteForm, ProfileChangeRegistryForm, ProfileChangeAddressForm,
     ProfileChangeCourseForm, ProfileChangeNoCourseForm, ProfileAddChildForm,
-    ProfileChangeChildForm)
+    ProfileChangeChildForm, ProfileReleaseForm)
 from users.models import User, Profile, CourseSchedule
 
 def registration_message( username, password ):
@@ -236,6 +236,9 @@ class ProfileDeleteView(LoginRequiredMixin, FormView):
         profile.delete()
         return super(ProfileDeleteView, self).form_valid(form)
 
+class TemplateDeletedView(TemplateView):
+    template_name = 'users/profile_deleted.html'
+
 class ProfileDeleteChildView(LoginRequiredMixin, FormView):
     form_class = ProfileDeleteForm
     template_name = 'users/profile_delete_child.html'
@@ -259,8 +262,28 @@ class ProfileDeleteChildView(LoginRequiredMixin, FormView):
         profile.delete()
         return super(ProfileDeleteChildView, self).form_valid(form)
 
-class TemplateDeletedView(TemplateView):
-    template_name = 'users/profile_deleted.html'
-
 class TemplateDeletedChildView(TemplateView):
     template_name = 'users/profile_deleted_child.html'
+
+class ProfileReleaseView(LoginRequiredMixin, FormView):
+    form_class = ProfileReleaseForm
+    template_name = 'users/profile_release.html'
+    success_url = '/accounts/profile/released'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        child = get_object_or_404(Profile, user_id = self.kwargs['pk'],
+            parent_id = self.request.user.id)
+        if not child.user.is_adult():
+            raise Http404("Child is not adult")
+        context['name'] = child.get_full_name()
+        return context
+
+    def form_valid(self, form):
+        user = User.objects.get(id = self.kwargs['pk'] )
+        user.is_active = True
+        user.save()
+        profile = Profile.objects.get(pk = user.id)
+        profile.parent = None
+        profile.save()
+        return super(ProfileReleaseView, self).form_valid(form)
