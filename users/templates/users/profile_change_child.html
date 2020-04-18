@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ website.acro }} | Modifica profilo{%endblock title %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+    <h4><strong>Modifica il profilo di {{ user.get_short_name }}</strong></h4>
+    <hr class="mb-4">
+    {% if form.errors %}
+      <p class="alert alert-danger" role="alert">
+        Per favore, correggi gli errori qui sotto.
+      </p>
+    {% endif %}
+    <form action="" method="post" enctype="multipart/form-data" novalidate>
+        {% include 'users/profile_includes/avatar.html' %}
+        {% include 'users/profile_includes/name.html' %}
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            {{ form.email|as_crispy_field }}
+          </div>
+        </div>
+        {% include 'users/profile_includes/button.html' %}
+      {% csrf_token %}
+    </form>
+  </div>
+</div>
+{% endblock content %}

@@ -9,7 +9,8 @@ from django.views.generic.edit import FormView, UpdateView, CreateView
 from project.utils import generate_unique_username
 from users.forms import (RegistrationForm, ProfileChangeForm,
     ProfileDeleteForm, ProfileChangeRegistryForm, ProfileChangeAddressForm,
-    ProfileChangeCourseForm, ProfileChangeNoCourseForm, ProfileAddChildForm)
+    ProfileChangeCourseForm, ProfileChangeNoCourseForm, ProfileAddChildForm,
+    ProfileChangeChildForm)
 from users.models import User, Profile, CourseSchedule
 
 def registration_message( username, password ):
@@ -125,12 +126,23 @@ class ProfileChangeView(LoginRequiredMixin, UpdateView):
             })
         return initial
 
+    def get_form_class(self):
+        if 'parent' in self.request.GET:
+            return ProfileChangeChildForm
+        return super(ProfileChangeView, self).get_form_class()
+
+    def get_template_names(self):
+        if 'parent' in self.request.GET:
+            return 'users/profile_change_child.html'
+        return super(ProfileChangeView, self).get_template_names()
+
     def form_valid(self, form):
         profile = Profile.objects.get(pk = self.object.id)
         profile.avatar = form.cleaned_data['avatar']
-        profile.bio = form.cleaned_data['bio']
-        profile.yes_spam = form.cleaned_data['yes_spam']
-        profile.sector = form.cleaned_data['sector']
+        if not 'parent' in self.request.GET:
+            profile.bio = form.cleaned_data['bio']
+            profile.yes_spam = form.cleaned_data['yes_spam']
+            profile.sector = form.cleaned_data['sector']
         profile.save()
         return super(ProfileChangeView, self).form_valid(form)
 

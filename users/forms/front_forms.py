@@ -52,6 +52,20 @@ class ProfileChangeForm(ModelForm):
         model = User
         fields = ('first_name', 'last_name', 'email')
 
+class ProfileChangeChildForm(ModelForm):
+    avatar = forms.FileField( required = False, widget = SmallClearableFileInput())
+    first_name = forms.CharField( label = 'Nome', required = True,
+        widget = forms.TextInput())
+    last_name = forms.CharField( label = 'Cognome', required = True,
+        widget = forms.TextInput())
+    email = forms.EmailField(label = 'Email', required = True,
+        widget=forms.EmailInput(attrs={'autocomplete': 'email',
+            'placeholder': 'you@example.com'}))
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email')
+
 class ProfileChangeRegistryForm(ModelForm):
     date_of_birth = forms.DateField( input_formats=['%d/%m/%Y'], required=True,
         label='Data di nascita (gg/mm/aaaa)',
