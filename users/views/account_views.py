@@ -154,13 +154,26 @@ class ProfileChangeRegistryView(LoginRequiredMixin, UpdateView):
     form_class = ProfileChangeRegistryForm
     template_name = 'users/profile_change_registry.html'
 
-    def get(self, request, *args, **kwargs):
-        if request.user.id != kwargs['pk']:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'parent' in self.request.GET:
+            if self.object.parent_id != self.request.user.id:
+                raise Http404("User is not authorized to manage this profile")
+        elif self.request.user.id != self.kwargs['pk']:
             raise Http404("User is not authorized to manage this profile")
-        return super(ProfileChangeRegistryView, self).get(request, *args, **kwargs)
+        context['name'] = self.object.get_full_name()
+        return context
+
+    #def get(self, request, *args, **kwargs):
+        #if 'parent' in self.request.GET:
+            #if self.object.parent_id != self.request.user.id:
+                #raise Http404("User is not authorized to manage this profile")
+        #elif self.request.user.id != self.kwargs['pk']:
+            #raise Http404("User is not authorized to manage this profile")
+        #return super(ProfileChangeRegistryView, self).get(request, *args, **kwargs)
 
     def get_success_url(self):
-        return f'/accounts/profile/?submitted={self.request.user.get_full_name()}'
+        return f'/accounts/profile/?submitted={self.object.get_full_name()}'
 
 class ProfileChangeAddressView(LoginRequiredMixin, UpdateView):
     model = Profile
