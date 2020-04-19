@@ -26,6 +26,10 @@ class MemberPaymentInline(admin.TabularInline):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('get_full_name', 'is_trusted', 'parent')
-    list_editable = ('is_trusted', )
+    list_display = ('get_full_name', 'parent', 'is_trusted', 'sector',
+        'mc_state', 'settled')
+    list_editable = ('is_trusted', 'sector', 'mc_state', 'settled' )
+    list_filter = ('sector', 'mc_state', 'settled')
+    search_fields = ('fiscal_code', 'address')
     inlines = [ MemberPaymentInline, ]
+    #actions = ['control_mc', 'reset_all', 'control_pay']

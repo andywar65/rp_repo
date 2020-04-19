@@ -53,6 +53,10 @@ class User(AbstractUser):
                 memb.save()
                 return
 
+    class Meta:
+        verbose_name = 'Utente'
+        verbose_name_plural = 'Utenti'
+
 class CourseSchedule(models.Model):
     full = models.CharField(max_length = 32, verbose_name = 'Giorno e ora',)
     abbrev = models.CharField(max_length = 8, verbose_name = 'Abbreviazione',)
@@ -151,6 +155,7 @@ class Profile(models.Model):
         return self.user.get_full_name()
 
     class Meta:
+        ordering = ('user__last_name', 'user__first_name', 'user__username')
         verbose_name = 'Iscritto'
         verbose_name_plural = 'Iscritti'
 
@@ -164,6 +169,7 @@ class MemberPayment(models.Model):
         return 'Pagamento - %s' % (self.id)
 
     class Meta:
+        ordering = ( '-date', )
         verbose_name = 'Pagamento'
         verbose_name_plural = 'Pagamenti'
 
