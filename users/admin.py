@@ -37,33 +37,22 @@ class ProfileAdmin(admin.ModelAdmin):
     #actions = ['control_mc', 'reset_all', 'control_pay']
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        member = Profile.objects.get(user_id=object_id)
+        member = self.get_object(request, object_id)
         if member.parent:
             self.form = ChangeMemberChildForm
-            #self.inlines = [ MemberPaymentInline, ]
+            self.inlines = [ MemberPaymentInline, ]
         elif member.sector == '0-NO':
             self.form = ChangeMember0Form
+            self.inlines = []
         elif member.sector == '1-YC':
             self.form = ChangeMember1Form
-            #self.inlines = [ MemberPaymentInline, ]
+            self.inlines = [ MemberPaymentInline, ]
         elif member.sector == '2-NC':
             self.form = ChangeMember2Form
-            #self.inlines = [ MemberPaymentInline, ]
+            self.inlines = [ MemberPaymentInline, ]
         elif member.sector == '3-FI':
             self.form = ChangeMember3Form
+            self.inlines = []
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context,
         )
-
-    #def get_inlines(self, request, obj):
-        #member = Profile.objects.get(user_id=object_id)
-        #if member.parent:
-            #return [ MemberPaymentInline, ]
-        #elif member.sector == '0-NO':
-            #return []
-        #elif member.sector == '1-YC':
-            #return [ MemberPaymentInline, ]
-        #elif member.sector == '2-NC':
-            #return [ MemberPaymentInline, ]
-        #elif member.sector == '3-FI':
-            #return []
