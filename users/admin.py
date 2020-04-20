@@ -1,5 +1,9 @@
+from datetime import date, timedelta
+
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.core.mail import EmailMessage
 from django.db.models import Q
 
 from .models import (User, Profile, UserMessage, CourseSchedule, MemberPayment)
@@ -35,7 +39,7 @@ class ProfileAdmin(admin.ModelAdmin):
         'settled' )
     list_filter = ('sector', 'mc_state', 'settled')
     search_fields = ('fiscal_code', 'address')
-    actions = [ 'control_pay', 'reset_all', ]#['control_mc', 'reset_all']
+    actions = [ 'control_mc', 'control_pay', 'reset_all', ]
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         member = self.get_object(request, object_id)
@@ -57,6 +61,49 @@ class ProfileAdmin(admin.ModelAdmin):
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context,
         )
+
+    def control_mc(self, request, queryset):
+        queryset = queryset.filter( Q( sector = '1-YC' ) | Q( sector = '2-NC' ))
+        for member in queryset:
+            if member.mc_state == None:
+                member.mc_state = '0-NF'
+                member.save()
+            elif (member.mc_state == '0-NF' or
+                member.mc_state == '5-NI'):
+                if member.med_cert:
+                    member.mc_state = '1-VF'
+                    member.save()
+            elif member.mc_state == '2-RE':
+                if member.mc_expiry<date.today() + timedelta(days=30):
+                    member.mc_state = '6-IS'
+                    member.save()
+                elif member.mc_expiry<date.today():
+                    member.mc_state = '3-SV'
+                    member.save()
+            elif member.mc_state == '6-IS':
+                if member.mc_expiry<date.today():
+                    member.mc_state = '3-SV'
+                    member.save()
+            elif member.mc_state == '4-SI':
+                member.med_cert = None
+                member.mc_expiry = None
+                member.mc_state = '5-NI'
+                member.save()
+                if member.parent:
+                    mailto = [member.parent.email, ]
+                else:
+                    mailto = [member.user.email, ]
+                message = 'Buongiorno \n'
+                message += f'Il CM/CMA di {member.get_full_name()} '
+                message += 'risulta scaduto o inesistente. \n'
+                message += 'Si prega di rimediare al più presto. Grazie. \n'
+                message += 'Lo staff di RP'
+                subject = 'Verifica CM/CMA'
+                email = EmailMessage(subject, message, settings.SERVER_EMAIL,
+                    mailto)
+                email.send()
+
+    control_mc.short_description = 'Gestisci CM/CMA'
 
     def control_pay(self, request, queryset):
         queryset = queryset.filter( Q( sector = '1-YC' ) | Q( sector = '2-NC' ))
