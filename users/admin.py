@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.db.models import Q
 
 from .models import (User, Profile, UserMessage, CourseSchedule, MemberPayment)
 from .forms import (ChangeMemberChildForm, ChangeMember0Form,
@@ -34,7 +35,7 @@ class ProfileAdmin(admin.ModelAdmin):
         'settled' )
     list_filter = ('sector', 'mc_state', 'settled')
     search_fields = ('fiscal_code', 'address')
-    #actions = ['control_mc', 'reset_all', 'control_pay']
+    actions = [ 'reset_all', ]#['control_mc', 'reset_all', 'control_pay']
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         member = self.get_object(request, object_id)
@@ -56,3 +57,9 @@ class ProfileAdmin(admin.ModelAdmin):
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context,
         )
+
+    def reset_all(self, request, queryset):
+        queryset.update(sign_up='', privacy='', settled='', total_amount=0.00)
+        for member in queryset:
+            MemberPayment.objects.filter(member_id = member.pk).delete()
+    reset_all.short_description = 'Resetta i dati'
