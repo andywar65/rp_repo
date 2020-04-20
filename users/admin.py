@@ -35,7 +35,7 @@ class ProfileAdmin(admin.ModelAdmin):
         'settled' )
     list_filter = ('sector', 'mc_state', 'settled')
     search_fields = ('fiscal_code', 'address')
-    actions = [ 'reset_all', ]#['control_mc', 'reset_all', 'control_pay']
+    actions = [ 'control_pay', 'reset_all', ]#['control_mc', 'reset_all']
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         member = self.get_object(request, object_id)
@@ -58,8 +58,31 @@ class ProfileAdmin(admin.ModelAdmin):
             request, object_id, form_url, extra_context=extra_context,
         )
 
+    def control_pay(self, request, queryset):
+        queryset = queryset.filter( Q( sector = '1-YC' ) | Q( sector = '2-NC' ))
+        for member in queryset:
+            if member.settled == 'YES':
+                continue
+            elif member.total_amount == 0.00:
+                member.settled = 'VI'
+                member.save()
+            else:
+                paid = 0.00
+                payments = MemberPayment.objects.filter(member_id = member.pk)
+                for payment in payments:
+                    paid += payment.amount
+                if paid >= member.total_amount:
+                    member.settled = 'YES'
+                    member.save()
+                else:
+                    member.settled = 'NO'
+                    member.save()
+
+    control_pay.short_description = 'Controlla i pagamenti'
+
     def reset_all(self, request, queryset):
         queryset.update(sign_up='', privacy='', settled='', total_amount=0.00)
         for member in queryset:
             MemberPayment.objects.filter(member_id = member.pk).delete()
+
     reset_all.short_description = 'Resetta i dati'
