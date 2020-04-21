@@ -71,6 +71,16 @@ class CourseSchedule(models.Model):
 def user_directory_path(instance, filename):
     return 'uploads/users/{0}/{1}'.format(instance.user.username, filename)
 
+def mc_state_email(mailto, name, state):
+    message = f"""Buongiorno \n
+        Il CM/CMA di {name} risulta {state}. \n
+        Si prega di provvedere al più presto. Grazie. \n
+        Lo staff di RP"""
+    subject = 'Verifica CM/CMA'
+    email = EmailMessage(subject, message, settings.SERVER_EMAIL,
+        mailto)
+    email.send()
+
 class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE,
@@ -153,6 +163,24 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.get_full_name()
+
+    def save(self, *args, **kwargs):
+        if self.parent:
+            mailto = [self.parent.email, ]
+        else:
+            mailto = [self.user.email, ]
+        if self.mc_state == '02NI':
+            self.mc_state = '04NN'
+            mc_state_email(mailto, self.get_full_name(), 'inesistente')
+        elif self.mc_state == '62II':
+            self.mc_state = '64IN'
+            mc_state_email(mailto, self.get_full_name(), 'in scadenza')
+        elif self.mc_state == '4-SI':
+            self.med_cert = None
+            self.mc_expiry = None
+            self.mc_state = '5-NI'
+            mc_state_email(mailto, self.get_full_name(), 'scaduto')
+        return super(Profile, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ('user__last_name', 'user__first_name', 'user__username')

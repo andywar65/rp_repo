@@ -68,7 +68,7 @@ class ProfileAdmin(admin.ModelAdmin):
             if member.mc_state == None:
                 member.mc_state = '0-NF'
                 member.save()
-            elif (member.mc_state == '0-NF' or
+            elif (member.mc_state.startswith('0') or
                 member.mc_state == '5-NI'):
                 if member.med_cert:
                     member.mc_state = '1-VF'
@@ -80,28 +80,10 @@ class ProfileAdmin(admin.ModelAdmin):
                 elif member.mc_expiry<date.today():
                     member.mc_state = '3-SV'
                     member.save()
-            elif member.mc_state == '6-IS':
+            elif member.mc_state.startswith('6'):
                 if member.mc_expiry<date.today():
                     member.mc_state = '3-SV'
                     member.save()
-            elif member.mc_state == '4-SI':
-                member.med_cert = None
-                member.mc_expiry = None
-                member.mc_state = '5-NI'
-                member.save()
-                if member.parent:
-                    mailto = [member.parent.email, ]
-                else:
-                    mailto = [member.user.email, ]
-                message = 'Buongiorno \n'
-                message += f'Il CM/CMA di {member.get_full_name()} '
-                message += 'risulta scaduto o inesistente. \n'
-                message += 'Si prega di rimediare al più presto. Grazie. \n'
-                message += 'Lo staff di RP'
-                subject = 'Verifica CM/CMA'
-                email = EmailMessage(subject, message, settings.SERVER_EMAIL,
-                    mailto)
-                email.send()
 
     control_mc.short_description = 'Gestisci CM/CMA'
 
