@@ -15,12 +15,16 @@ NO_COURSE = [('UNA', 'UISP non agonistico'),
 
 MC_STATE = [
     ('0-NF', 'Manca il file'),
+    ('02NI', 'Mancante, invia notifica'),
+    ('04NN', 'Mancante, notificato'),
     ('1-VF', 'Verifica file'),
     ('2-RE', 'Regolare'),
     ('6-IS', 'In scadenza'),
+    ('62II', 'In scadenza, invia notifica'),
+    ('64IN', 'In scadenza, notificato'),
     ('3-SV', 'Scaduto, da verificare'),
-    ('4-SI', 'Scaduto, inviare notifica'),
-    ('5-NI', 'Scaduto, notifica inviata'),
+    ('4-SI', 'Scaduto, invia notifica'),
+    ('5-NI', 'Scaduto, notificato'),
     ]
 
 SETTLED = [
