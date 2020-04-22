@@ -13,34 +13,8 @@ from streamfield.fields import StreamField
 from streamblocks.models import (IndexedParagraph, CaptionedImage, Gallery,
     LandscapeGallery, DownloadableFile, LinkableList, BoxedText, EventUpgrade)
 from .choices import *
-from users.models import User, Member
-
-def date_directory_path(instance, filename):
-    if instance.date:
-        now = instance.date
-    else:
-        now = datetime.now()
-    year = now.strftime("%Y")
-    month = now.strftime("%m")
-    day = now.strftime("%d")
-    return 'uploads/{0}/{1}/{2}/{3}'.format(year, month, day, filename)
-
-def generate_unique_slug(klass, field):
-    """
-    return unique slug if origin slug exists.
-    eg: `foo-bar` => `foo-bar-1`
-
-    :param `klass` is Class model.
-    :param `field` is specific field for title.
-    Thanks to djangosnippets.org!
-    """
-    origin_slug = slugify(field)
-    unique_slug = origin_slug
-    numb = 1
-    while klass.objects.filter(slug=unique_slug).exists():
-        unique_slug = '%s-%d' % (origin_slug, numb)
-        numb += 1
-    return unique_slug
+from users.models import User, Profile
+from project.utils import generate_unique_slug
 
 class Location(models.Model):
     fb_image = FileBrowseField("Immagine", max_length=200,
@@ -97,13 +71,13 @@ class Location(models.Model):
         verbose_name_plural = 'Luoghi'
         ordering = ('id', )
 
-def update_indexed_paragraphs(stream_list, type, id):
-    for block in stream_list:
-        if block['model_name'] == 'IndexedParagraph':
-            par = IndexedParagraph.objects.get(id = block['id'])
-            par.parent_type = type
-            par.parent_id = id
-            par.save()
+#def update_indexed_paragraphs(stream_list, type, id):
+    #for block in stream_list:
+        #if block['model_name'] == 'IndexedParagraph':
+            #par = IndexedParagraph.objects.get(id = block['id'])
+            #par.parent_type = type
+            #par.parent_id = id
+            #par.save()
 
 class Event(models.Model):
     fb_image = FileBrowseField("Immagine", max_length=200, directory="events/",
@@ -156,8 +130,11 @@ class Event(models.Model):
             return 'warning'
 
     def get_image(self):
-        if self.fb_image:
-            return self.fb_image
+        gallery_list = self.carousel.from_json()
+        if gallery_list:
+            gallery = gallery_list[0]
+            image = LandscapeGallery.objects.filter( id__in = gallery['id'] ).first()
+            return image.fb_image
         elif self.location.fb_image:
             return self.location.fb_image
         return
@@ -165,8 +142,8 @@ class Event(models.Model):
     def get_tags(self):
         return list(self.tags.names())
 
-    def get_upgrades(self):
-        return EventUpgrade.objects.filter(event_id=self.id)
+    #def get_upgrades(self):
+        #return EventUpgrade.objects.filter(event_id=self.id)
 
     def get_chronicle(self):
         if self.date.date() < datetime.today().date():
@@ -206,20 +183,20 @@ class Event(models.Model):
         verbose_name_plural = 'Eventi'
         ordering = ('-date', )
 
-class EventUpgrade(models.Model):
-    event = models.ForeignKey(Event, on_delete = models.CASCADE,
-        null = True, related_name='event_upgrades')
-    title = models.CharField('Titolo',
-        help_text="Il titolo dell'aggiornamento",
-        max_length = 50)
-    date = models.DateTimeField('Data', default = now)
-    body = models.TextField('Aggiornamento',
-        help_text = "Accetta tag HTML.", )
+#class EventUpgrade(models.Model):
+    #event = models.ForeignKey(Event, on_delete = models.CASCADE,
+        #null = True, related_name='event_upgrades')
+    #title = models.CharField('Titolo',
+        #help_text="Il titolo dell'aggiornamento",
+        #max_length = 50)
+    #date = models.DateTimeField('Data', default = now)
+    #body = models.TextField('Aggiornamento',
+        #help_text = "Accetta tag HTML.", )
 
-    def __str__(self):
-        return self.title
+    #def __str__(self):
+        #return self.title
 
-    class Meta:
-        verbose_name = 'Aggiornamento'
-        verbose_name_plural = 'Aggiornamenti'
-        ordering = ('-date', )
+    #class Meta:
+        #verbose_name = 'Aggiornamento'
+        #verbose_name_plural = 'Aggiornamenti'
+        #ordering = ('-date', )
