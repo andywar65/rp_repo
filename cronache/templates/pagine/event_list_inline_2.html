@@ -1,0 +1,17 @@
+{% if event.get_tags %}
+  <li class="list-inline-item">
+    <i class="fa fa-folder-open" aria-hidden="true"></i>
+    {% for tag in event.get_tags %}
+      <a href="/calendario/?categoria={{ tag }}">{{ tag|upper }}</a>
+    {% endfor %}
+  </li>
+{% endif %}
+
+{% if event.event_race.all %}
+<li class="list-inline-item">
+  <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+  {% for race in event.event_race.all %}
+    <a href="{{ race.get_path }}">{{ race.title }}</a>
+  {% endfor %}
+</li>
+{% endif %}
