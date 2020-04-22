@@ -1,18 +1,22 @@
 import re
 from datetime import datetime
+
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.db import models
 from django.utils.timezone import now
-from django.utils.html import format_html
+from django.utils.html import format_html, strip_tags
+
 from filebrowser.fields import FileBrowseField
 from taggit.managers import TaggableManager
 from streamfield.fields import StreamField
+
 from streamblocks.models import (IndexedParagraph, CaptionedImage, Gallery,
     LandscapeGallery, DownloadableFile, LinkableList, BoxedText, EventUpgrade)
-from .choices import *
 from users.models import User, Profile
 from project.utils import generate_unique_slug
+
+from .choices import *
 
 class Location(models.Model):
     fb_image = FileBrowseField("Immagine", max_length=200,
