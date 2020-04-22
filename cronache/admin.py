@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.conf import settings
 from users.models import Profile
+from blog.admin import UserUploadInline
 from .models import ( Location, Event, )
 from .forms import EventForm
 
