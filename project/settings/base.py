@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'pages.apps.PagesConfig',
     'blog.apps.BlogConfig',
     'cronache.apps.CronacheConfig',
+    'criterium.apps.CriteriumConfig',
     'direzione.apps.DirezioneConfig',
     'wordpress.apps.WordpressConfig',
     'streamblocks',

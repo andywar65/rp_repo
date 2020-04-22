@@ -42,6 +42,7 @@ urlpatterns = [
     path('calendario/', include('cronache.urls.events', namespace = 'chronicles')),
     path('luoghi/', include('cronache.urls.locations')),
     path('archivio/', include('wordpress.urls', namespace = 'wordpress')),
+    path('criterium/', include('criterium.urls', namespace = 'criterium')),
     path('articoli/', include('blog.urls.posts', namespace = 'blog')),
     #path('docs/', include('pages.urls.tree_pages', namespace = 'docs')),
     path('streamfield/', include('streamfield.urls')),
