@@ -1,4 +1,4 @@
-{% extends 'pagine/event_archive_general.html' %}
+{% extends 'cronache/event_archive_general.html' %}
 
 {% block title %}RP | Calendario{% endblock title %}
 {% block event_archive %}
@@ -18,8 +18,8 @@
           <h3 class="text-uppercase"><strong><a href="/calendario/{{ event.date|date:"Y/m/d" }}/{{ event.slug }}">{{ event.title }}</a></strong></h3>
           <p>{{ event.intro }}</p>
           <ul class="list-inline">
-            {% include 'pagine/event_list_inline.html'%}
-            {% include 'pagine/event_list_inline_2.html'%}
+            {% include 'cronache/event_list_inline.html'%}
+            {% include 'cronache/event_list_inline_2.html'%}
           </ul>
         </div>
       </div>

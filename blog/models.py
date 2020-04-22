@@ -9,7 +9,7 @@ from streamfield.fields import StreamField
 from streamblocks.models import (IndexedParagraph, CaptionedImage, Gallery,
     LandscapeGallery, DownloadableFile, LinkableList, BoxedText, HomeButton)
 from users.models import User
-#from cronache.models import Event
+from cronache.models import Event
 from .choices import *
 
 class Article(models.Model):
@@ -100,8 +100,8 @@ class Article(models.Model):
         ordering = ('-date', )
 
 class UserUpload(models.Model):
-    #event = models.ForeignKey(Event, on_delete = models.CASCADE,
-        #null = True, related_name='event_uploads')
+    event = models.ForeignKey(Event, on_delete = models.CASCADE,
+        null = True, related_name='event_uploads')
     post = models.ForeignKey(Article, on_delete = models.CASCADE,
         null = True, related_name='article_uploads')
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null = True,

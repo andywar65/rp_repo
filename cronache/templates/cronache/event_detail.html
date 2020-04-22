@@ -20,8 +20,8 @@
           <h3 class="text-uppercase"><strong>{{ event.title }}</strong></h3>
           <p>{{ event.intro }}</p>
           <ul class="list-inline">
-            {% include 'pagine/event_list_inline.html'%}
-            {% include 'pagine/event_list_inline_2.html'%}
+            {% include 'cronache/event_list_inline.html'%}
+            {% include 'cronache/event_list_inline_2.html'%}
           </ul>
         </div>
       </div>
@@ -58,7 +58,7 @@
             <hr class="mb-4">
             <div class="card-deck">
               {% for upload in event.get_uploads %}
-                {% include 'pagine/uploads.html' %}
+                {% include 'cronache/uploads.html' %}
               {% endfor %}
             </div>
             {% endif %}

@@ -1,8 +1,9 @@
 from django.urls import path
 from cronache.views import (EventArchiveIndexView, EventYearArchiveView,
-    EventMonthArchiveView, EventDayArchiveView, DetailEvent, UserUploadCreateView )
+    EventMonthArchiveView, EventDayArchiveView, DetailEvent, )
+from blog.views import UserUploadCreateView
 
-app_name = 'pagine'
+app_name = 'chronicles'
 
 urlpatterns = [
     path('', EventArchiveIndexView.as_view(), name = 'event_index'),

@@ -39,6 +39,8 @@ urlpatterns = [
     path('', HomeTemplateView.as_view()),
     path('convenzioni/', include('direzione.urls.conventions',
         namespace = 'conventions')),
+    path('calendario/', include('cronache.urls.events', namespace = 'chronicles')),
+    path('luoghi/', include('cronache.urls.locations')),
     path('archivio/', include('wordpress.urls', namespace = 'wordpress')),
     path('articoli/', include('blog.urls.posts', namespace = 'blog')),
     #path('docs/', include('pages.urls.tree_pages', namespace = 'docs')),
