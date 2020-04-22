@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'pages.apps.PagesConfig',
     'blog.apps.BlogConfig',
-    'wordpress.apps.DirezioneConfig',
+    #'wordpress.apps.DirezioneConfig',
     'wordpress.apps.WordpressConfig',
     'streamblocks',
     'streamfield',

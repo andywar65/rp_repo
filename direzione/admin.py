@@ -12,7 +12,3 @@ class SocietyAdmin(admin.ModelAdmin):
     list_display = ('title', )
     form = SocietyForm
     autocomplete_fields = ['location', ]
-
-@admin.register(Institutional)
-class InstitutionalAdmin(admin.ModelAdmin):
-    list_display = ('title', 'type')

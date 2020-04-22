@@ -8,9 +8,6 @@ from users.models import Member
 from pagine.models import Location
 from .choices import *
 
-def user_directory_path():#do not delete, it crashes a migration
-    return
-
 def generate_unique_slug(klass, field):
     """
     return unique slug if origin slug exists.
@@ -90,27 +87,3 @@ class Society(models.Model):
     class Meta:
         verbose_name = 'Dati societari'
         verbose_name_plural = 'Dati societari'
-
-class Institutional(models.Model):
-    type = models.CharField('Tipo', max_length = 4, choices = TYPE, null = True)
-    title = models.CharField('Titolo', max_length = 50)
-    intro = models.TextField('Introduzione',
-        blank= True, null=True, max_length = 200)
-    stream = StreamField( model_list=[ IndexedParagraph, CaptionedImage,
-        DownloadableFile, LinkableList, BoxedText, ],
-        verbose_name="Testo" )
-
-    def get_paragraphs(self):
-        paragraphs = []
-        for block in self.stream.from_json():
-            if block['model_name'] == 'IndexedParagraph':
-                par = IndexedParagraph.objects.get(id=block['id'])
-                paragraphs.append( (par.get_slug, par.title) )
-        return paragraphs
-
-    def __str__(self):
-        return self.title
-
-    class Meta:
-        verbose_name = 'Pagina istituzionale'
-        verbose_name_plural = 'Pagine istituzionali'
