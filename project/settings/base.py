@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'pages.apps.PagesConfig',
     'blog.apps.BlogConfig',
+    'wordpress.apps.WordpressConfig',
     'streamblocks',
     'streamfield',
     'captcha',
