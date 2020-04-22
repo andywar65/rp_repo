@@ -27,6 +27,34 @@
 </div>
 {% endif %}
 <hr class="mb-4">
+<a href="/calendario/"><h4><strong>Appuntamenti e cronache</strong></h4></a>
+{% if all_events %}
+<div class="card-deck">
+{% for event in all_events %}
+  <div class="card border-{{ event.get_badge_color }}" style="margin-bottom: 20px; min-width: 18rem; ">
+    <div class="card-header">
+      <h1 class="display-4"><span class="badge badge-{{ event.get_badge_color }}">{{ event.date|date:"j" }}</span></h1>
+      <a href="/calendario/{{ event.date|date:"Y/m" }}/"><h4>{{ event.date|date:"M-Y" }}</h4></a>
+    </div>
+    <a href="/calendario/{{ event.date|date:"Y/m/d" }}/{{ event.slug }}">
+      <img class="card-img-top" src="{{ event.get_image.url }}" alt="{{ event.intro }}">
+    </a>
+    <div class="card-body">
+      <a href="/calendario/{{ event.date|date:"Y/m/d" }}/{{ event.slug }}">
+        <h4 class="card-title">{{ event.title }}</h4>
+      </a>
+      <em class="card-text">{{ event.intro }}</em>
+      <ul class="list-inline">
+        {% include 'pagine/event_list_inline.html'%}
+      </ul>
+    </div>
+  </div>
+{% endfor %}
+</div>
+{% else %}
+<p>Non ci sono eventi in calendario</p>
+{% endif %}
+<hr class="mb-4">
 <a href="/articoli/"><h4><strong>Articoli di approfondimento</strong></h4></a>
 {% if posts %}
 <div class="card-deck">

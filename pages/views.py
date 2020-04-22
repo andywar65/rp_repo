@@ -4,6 +4,7 @@ from django.views.generic import TemplateView, DetailView, ListView
 from streamblocks.models import HomeButton
 
 from blog.models import Article
+from cronache.models import Event
 from .models import ( HomePage, TreePage )
 
 class HomeTemplateView(TemplateView):
@@ -14,6 +15,7 @@ class HomeTemplateView(TemplateView):
         context['page'] = HomePage.objects.first()
         if not context['page']:
             raise Http404("Non ci sono Home Page")
+        context['all_events'] = Event.objects.all()[:6]
         context['posts'] = Article.objects.all()[:6]
         actions = context['page'].action.from_json()
         for action in actions:
