@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}RP | Convenzioni{% endblock title %}
+{% block content %}
+<div class="row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+    <h4><strong>Convenzioni mediche</strong></h4>
+    <hr class="mb-4">
+    {% if all_conventions %}
+      <ul>
+      {% for conv in all_conventions %}
+        <li>
+          <a href="{{ conv.get_path }}">{{ conv.title }}</a>,
+          {{ conv.location.address }}
+          {% if conv.location.gmap_link %}
+            <a href="{{ conv.location.gmap_link }}" target="_blank">Mappa</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    {% else %}
+      <h4>Non sono registrate convenzioni mediche.</h4>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}

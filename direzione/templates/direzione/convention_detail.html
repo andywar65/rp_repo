@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}RP | {{ conv.title }}{%endblock title %}
+{% block content %}
+<h4><strong>{{ conv.title }}</strong></h4>
+<p>{{ conv.description }}</p>
+<p><i class="fa fa-map-marker" aria-hidden="true"></i>Indirizzo: {{ conv.location.address }}</p>
+{% if conv.location.phone %}<p><i class="fa fa-phone" aria-hidden="true"></i>
+  Tel: {{ conv.location.phone }}</p>{% endif %}
+{% if conv.location.website %}
+<p><i class="fa fa-external-link" aria-hidden="true"></i>
+  Web: <a href="{{ conv.location.website }}" target="_blank">{{ conv.location.website }}</a>
+</p>{% endif %}
+{% if conv.location.email %}
+<p><i class="fa fa-envelope-o" aria-hidden="true"></i>
+  Mail: <a href="mailto:{{ conv.location.email }}">{{ conv.location.email }}</a>
+</p>{% endif %}
+{% if conv.file_stream.render %}
+<h4>File caricati</h4>
+{{ conv.file_stream.render }}
+{% endif %}
+<hr class="mb-4">
+<div class="row">
+  <div class="col-md-6">
+  {% if conv.location.gmap_embed %}
+    <iframe src="{{ conv.location.gmap_embed }}" width="100%" height="450" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+  {% elif conv.location.gmap_link %}
+    <p><a href="{{ conv.location.gmap_link }}" target="_blank">{{ conv.location.address }}</a></p>
+  {% else %}
+    <p>{{ conv.location.address }}</p>
+  {% endif %}
+  </div>
+  <div class="col-md-6">
+    {% if conv.location.fb_image %}
+    <img src="{{ conv.location.fb_image.url }}" width="100%" alt="{{ conv.location.address }}" />
+    {% endif %}
+  </div>
+</div>
+<hr class="mb-4">
+
+{% endblock content %}
