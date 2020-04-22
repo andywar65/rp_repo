@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}RP | Criterium {{ year }}-{{ year2 }}{% endblock title %}
+{% block content %}
+<h4><strong>Criterium edizione {{ year }}-{{ year2 }}</strong></h4>
+<hr class="mb-4">
+{% if all_races %}
+  <h4>Lista delle gare</h4>
+  <ul>
+  {% for race in all_races %}
+    <li>
+      <a href="{{ race.get_path }}">{{ race.title }}, </a>
+      {{ race.date|date:"d M Y"}},
+      {% if race.location %}
+        {{ race.get_location }}
+      {% endif %}
+      {% if race.event %}
+        <a href="{{ race.event.get_path }}">(leggi la cronaca)</a>
+      {% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+  {% if females %}
+  <h5>Classifica femminile {{ status }}</h5>
+    <ol>
+    {% for id, points in females.items %}
+      <li>
+        <a href="/criterium/{{ year }}-{{ year2 }}/athlete/{{ id }}">{{ points.0 }}</a>,
+        {{ points.1 }}
+      </li>
+    {% endfor %}
+    </ol>
+  {% endif %}
+  {% if males %}
+  <h5>Classifica maschile {{ status }}</h5>
+    <ol>
+    {% for id, points in males.items %}
+      <li>
+        <a href="/criterium/{{ year }}-{{ year2 }}/athlete/{{ id }}">{{ points.0 }}</a>,
+        {{ points.1 }}
+      </li>
+    {% endfor %}
+    </ol>
+  {% endif %}
+{% else %}
+    <div class="col-md-12">
+        <h4>Non sono registrate gare in questa edizione.</h4>
+    </div>
+{% endif %}
+<hr class="mb-4">
+  <nav aria-label="Page navigation container">
+  <ul class="pagination justify-content-center">
+    <li><a href="/criterium/{{ year0 }}-{{ year }}/" class="page-link">&laquo; PRECEDENTE </a></li>
+    <li><a href="/criterium/{{ year2 }}-{{ year3 }}/" class="page-link"> SUCCESSIVA &raquo;</a></li>
+  </ul>
+  </nav>
+{% endblock content %}

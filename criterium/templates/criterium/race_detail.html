@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}RP | {{ race.title }}{%endblock title %}
+{% block content %}
+<div class="row row-striped">
+  <div class="col-md-2 text-right">
+    <i class="fa fa-flag-checkered fa-3x" aria-hidden="true"></i>
+    <a href="/criterium/{{ race.get_edition }}/"><h4>{{ race.get_edition }}</h4></a>
+  </div>
+  <div class="col-md-10">
+    <h3 class="text-uppercase"><strong>{{ race.title }}</strong></h3>
+    <ul class="list-inline">
+      <li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> {{ race.get_date }}</li>
+      {% if race.type %}
+        <li class="list-inline-item"><i class="fa fa-wheelchair-alt" aria-hidden="true"></i> {{ race.get_type_display }}</li>
+      {% endif %}
+      {% if race.location %}
+      <li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i>
+        {{ race.get_location }}</li>
+      {% endif %}
+      {% if race.event %}
+        <li class="list-inline-item"><i class="fa fa-link" aria-hidden="true"></i>
+        <a href="{{ race.event.get_path }}">{{ race.event.title }}</a></li>
+      {% endif %}
+      {% if perms.criterium.change_race %}
+      <li class="list-inline-item">
+        <i class="fa fa-pencil" aria-hidden="true"></i>
+        <a href="/admin/criterium/race/{{ race.id }}/change/">Modifica</a>
+      </li>
+      {% endif %}
+    </ul>
+    <p>{{ race.description }}</p>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+    {% if females %}
+    <h4>Classifica femminile</h4>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Punti</th>
+            <th scope="col">Piazzamento</th>
+            <th scope="col">Tempo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for female in females %}
+          <tr>
+            <td>{{ female.member.get_full_name_reverse }}</td>
+            <td>{{ female.points }}</td>
+            <td>{{ female.placement|default_if_none:"--" }}</td>
+            <td>{{ female.time|time:"H:i:s" }}</td>
+          </tr>
+          {% endfor %}
+        <tbody>
+      </table>
+    </div>
+    {% endif %}
+    {% if males %}
+    <h4>Classifica maschile</h4>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Punti</th>
+            <th scope="col">Piazzamento</th>
+            <th scope="col">Tempo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for male in males %}
+          <tr>
+            <td>{{ male.member.get_full_name_reverse }}</td>
+            <td>{{ male.points }}</td>
+            <td>{{ male.placement|default_if_none:"--" }}</td>
+            <td>{{ male.time|time:"H:i:s" }}</td>
+          </tr>
+          {% endfor %}
+        <tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}
