@@ -5,7 +5,7 @@ from streamfield.fields import StreamField
 from streamblocks.models import (IndexedParagraph, CaptionedImage,
     DownloadableFile, LinkableList, BoxedText)
 from users.models import Member
-from pagine.models import Location
+from cronache.models import Location
 from .choices import *
 
 def generate_unique_slug(klass, field):

@@ -22,7 +22,7 @@
   Ultima modifica: {{ event.last_updated|date:"d M Y" }}
 </li>
 
-{% if perms.pagine.change_event %}
+{% if perms.cronache.change_event %}
 <li class="list-inline-item">
   <i class="fa fa-pencil" aria-hidden="true"></i>
   <a href="/admin/pagine/event/{{ event.id }}/change/">Modifica</a>

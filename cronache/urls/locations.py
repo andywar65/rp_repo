@@ -1,5 +1,5 @@
 from django.urls import path
-from pagine.views import ListLocation, DetailLocation
+from cronache.views import ListLocation, DetailLocation
 
 urlpatterns = [
     path('', ListLocation.as_view(), name='locations'),

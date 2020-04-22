@@ -1,5 +1,5 @@
 from django.urls import path
-from pagine.views import (EventArchiveIndexView, EventYearArchiveView,
+from cronache.views import (EventArchiveIndexView, EventYearArchiveView,
     EventMonthArchiveView, EventDayArchiveView, DetailEvent, UserUploadCreateView )
 
 app_name = 'pagine'

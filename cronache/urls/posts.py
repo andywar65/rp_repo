@@ -1,5 +1,5 @@
 from django.urls import path
-from pagine.views import ListBlog, DetailBlog, UserUploadCreateView
+from cronache.views import ListBlog, DetailBlog, UserUploadCreateView
 
 app_name = 'blog'
 urlpatterns = [
