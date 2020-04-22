@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.conf import settings
 from users.models import Member
-from .models import ( Location, Event, EventUpgrade, UserUpload, Blog)
-from .forms import EventForm, BlogForm
+from .models import ( Location, Event, EventUpgrade, )
+from .forms import EventForm
 from rpnew_prog.utils import send_rp_mail
 
 @admin.register(Location)
@@ -14,11 +14,6 @@ class LocationAdmin(admin.ModelAdmin):
 class EventUpgradeInline(admin.TabularInline):
     model = EventUpgrade
     fields = ('title', 'date', 'body', )
-    extra = 0
-
-class UserUploadInline(admin.TabularInline):
-    model = UserUpload
-    fields = ('user', 'date', 'image', 'body', )
     extra = 0
 
 @admin.register(Event)
@@ -79,27 +74,3 @@ class EventAdmin(admin.ModelAdmin):
             event.notice = 'DONE'
             event.save()
     send_notice.short_description = 'Invia notifiche'
-
-@admin.register(Blog)
-class BlogAdmin(admin.ModelAdmin):
-    list_display = ('title', 'intro', 'date', 'author', )
-    search_fields = ('title', 'date', 'intro', )
-    inlines = [ UserUploadInline,  ]
-    form = BlogForm
-    
-    fieldsets = (
-        ('Galleria', {
-            'classes': ('collapse',),
-            'fields': ('carousel', ),
-        }),
-        (None, {
-            'fields': ('fb_image', 'title', 'date', 'intro')
-        }),
-        ('Testo', {
-            'classes': ('collapse',),
-            'fields': ('stream', ),
-        }),
-        (None, {
-            'fields': ('author', 'tags')
-        }),
-    )
