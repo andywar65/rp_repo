@@ -127,6 +127,18 @@ class BoxedText(models.Model):
         verbose_name="Testo in un box"
         verbose_name_plural="Testi in un box"
 
+class EventUpgrade(models.Model):
+    title = models.CharField('Titolo',
+        help_text="Il titolo dell'aggiornamento",
+        max_length = 50)
+    date = models.DateTimeField('Data', default = now)
+    body = models.TextField('Aggiornamento',
+        help_text = "Accetta tag HTML.", )
+
+    class Meta:
+        verbose_name = 'Aggiornamento'
+        verbose_name_plural = 'Aggiornamenti'
+
 # Register blocks for StreamField as list of models
 STREAMBLOCKS_MODELS = [
     IndexedParagraph,
@@ -137,4 +149,5 @@ STREAMBLOCKS_MODELS = [
     LinkableList,
     BoxedText,
     HomeButton,
+    EventUpgrade,
 ]

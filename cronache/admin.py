@@ -25,7 +25,7 @@ class EventAdmin(admin.ModelAdmin):
             'fields': ('carousel', ),
         }),
         (None, {
-            'fields': ('fb_image', 'title', 'date', 'location', 'intro')
+            'fields': ('title', 'date', 'location', 'intro')
         }),
         ('Lancio', {
             'classes': ('collapse',),
