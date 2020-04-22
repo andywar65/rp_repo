@@ -10,6 +10,30 @@
   <div class="col-md-8">
     {% if success %}
     <h4><strong>Ricerca di: "{{ search }}"</strong></h4>
+      {% if all_events %}
+        <h5>Cronache</h5>
+        {% for event in all_events %}
+          <ul>
+            <li>
+              <span><a href="{{ event.get_path }}">{{ event.title }}</a>
+                <em>{{ event.intro }}</em>
+                {{ event.date|date:"d M Y" }}</span>
+            </li>
+          </ul>
+        {% endfor %}
+      {% endif %}
+      {% if evt_uploads and user.is_authenticated %}
+        <h5>Cronache per contributo</h5>
+        {% for event in evt_uploads %}
+          <ul>
+            <li>
+              <span><a href="{{ event.get_path }}">{{ event.title }}</a>
+                <em>{{ event.intro }}</em>
+                {{ event.date|date:"d M Y" }}</span>
+            </li>
+          </ul>
+        {% endfor %}
+      {% endif %}
       {% if all_blogs %}
         <h5>Articoli</h5>
         {% for blog in all_blogs %}
