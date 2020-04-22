@@ -1,12 +1,10 @@
-import os
 import re
-from PIL import Image
 from datetime import datetime
-from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
+from django.core.mail import EmailMessage
 from django.db import models
 from django.utils.timezone import now
 from django.utils.html import format_html
-from django.utils.text import slugify
 from filebrowser.fields import FileBrowseField
 from taggit.managers import TaggableManager
 from streamfield.fields import StreamField
@@ -164,8 +162,22 @@ class Event(models.Model):
         self.stream_search += strip_tags(self.upgrade_stream.render)
         self.stream_search += strip_tags(self.chron_stream.render)
         self.stream_search += strip_tags(self.restr_stream.render)
-        if not self.notice:
-            self.notice = 'SPAM'
+        if self.notice == 'SPAM':
+            message = self.title + '\n'
+            message += self.intro + '\n'
+            url = settings.BASE_URL + self.get_path()
+            message += 'Fai click su questo link per leggerlo: ' + url + '\n'
+            recipients = User.objects.filter( is_active = True, )
+            #inactive users may not have profile
+            recipients = recipients.filter( profile__yes_spam = True, )
+            mailto = []
+            for recipient in recipients:
+                mailto.append(recipient.email)
+            subject = f'Nuovo evento su {settings.WEBSITE_NAME}'
+            email = EmailMessage(subject, message, settings.SERVER_EMAIL,
+                mailto)
+            email.send()
+            self.notice = 'DONE'
         super(Event, self).save(*args, **kwargs)
 
     def __str__(self):
