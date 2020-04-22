@@ -109,6 +109,7 @@ class Event(models.Model):
         Gallery, DownloadableFile, LinkableList, BoxedText],
         verbose_name="Area riservata",
         help_text="Inserisci qui materiale riservato ai soci",)
+    stream_search = models.TextField(editable=False, null=True)
     manager = models.ForeignKey(User, on_delete=models.SET_NULL,
         blank= True, null=True, verbose_name = 'Responsabile')
     tags = TaggableManager(verbose_name="Categorie",
@@ -116,9 +117,8 @@ class Event(models.Model):
         through=None, blank=True)
     notice = models.CharField(max_length = 4, choices = NOTICE,
         blank = True, null = True, verbose_name = 'Notifica via email',
-        help_text = """Non invia in automatico, per farlo seleziona l'Evento
-            dalla Lista degli Eventi, imposta l'azione 'Invia notifica' e fai
-            clic su 'Vai'.
+        help_text = """Invia notifica in automatico selezionando
+            'Invia notifica' e salvando l'articolo.
             """)
 
     def get_badge_color(self):
@@ -159,21 +159,14 @@ class Event(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = generate_unique_slug(Event, self.title)
+        self.last_updated = now()
+        self.stream_search = strip_tags(self.stream.render)
+        self.stream_search += strip_tags(self.upgrade_stream.render)
+        self.stream_search += strip_tags(self.chron_stream.render)
+        self.stream_search += strip_tags(self.restr_stream.render)
         if not self.notice:
             self.notice = 'SPAM'
-        self.last_updated = now()
         super(Event, self).save(*args, **kwargs)
-        #update parent_type end parent_id in IndexedParagraph streamblocks
-        type = ContentType.objects.get(app_label='pagine', model='event').id
-        id = self.id
-        stream_list = self.stream.from_json()
-        update_indexed_paragraphs(stream_list, type, id)
-        stream_list = self.upgrade_stream.from_json()
-        update_indexed_paragraphs(stream_list, type, id)
-        stream_list = self.chron_stream.from_json()
-        update_indexed_paragraphs(stream_list, type, id)
-        stream_list = self.restr_stream.from_json()
-        update_indexed_paragraphs(stream_list, type, id)
 
     def __str__(self):
         return self.title
