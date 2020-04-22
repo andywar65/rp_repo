@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (Convention, Society, Institutional, )
+from .models import (Convention, Society, )
 from .forms import SocietyForm
 
 @admin.register(Convention)

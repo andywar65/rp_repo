@@ -4,26 +4,10 @@ from django.utils.text import slugify
 from streamfield.fields import StreamField
 from streamblocks.models import (IndexedParagraph, CaptionedImage,
     DownloadableFile, LinkableList, BoxedText)
-from users.models import Member
+from users.models import Profile
 from cronache.models import Location
 from .choices import *
-
-def generate_unique_slug(klass, field):
-    """
-    return unique slug if origin slug exists.
-    eg: `foo-bar` => `foo-bar-1`
-
-    :param `klass` is Class model.
-    :param `field` is specific field for title.
-    Thanks to djangosnippets.org!
-    """
-    origin_slug = slugify(field)
-    unique_slug = origin_slug
-    numb = 1
-    while klass.objects.filter(slug=unique_slug).exists():
-        unique_slug = '%s-%d' % (origin_slug, numb)
-        numb += 1
-    return unique_slug
+from project.utils import generate_unique_slug
 
 class Convention(models.Model):
     title = models.CharField('Nome', help_text="Il nome della convenzione",
@@ -73,12 +57,12 @@ class Society(models.Model):
         max_length = 11)
     iban = models.CharField('Codice IBAN', blank= True, null=True,
         max_length = 27)
-    president = models.ForeignKey(Member, on_delete = models.SET_NULL,
+    president = models.ForeignKey(Profile, on_delete = models.SET_NULL,
         null=True, verbose_name = 'Presidente',
         related_name = 'society_president')
-    executive = models.ManyToManyField(Member,
+    executive = models.ManyToManyField(Profile,
         verbose_name = 'Dirigenti', related_name = 'society_executive')
-    trainers = models.ManyToManyField(Member,
+    trainers = models.ManyToManyField(Profile,
         verbose_name = 'Istruttori', related_name = 'society_trainers')
 
     def __str__(self):
