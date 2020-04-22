@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}RP | {{ post.title|safe }}{% endblock title %}
+
+{% block content %}
+
+  {% if post.visible %}
+    {% include 'wordpress/wp_detail_content.html' %}
+  {% else %}
+    {% if user.is_authenticated %}
+      {% include 'wordpress/wp_detail_content.html' %}
+    {% else %}
+      <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+          <h4 class="text-uppercase"><strong>{{ post.title|safe }}</strong></h4>
+          <p>Esegui il <a href="/admin/login/?next={{ request.get_full_path }}">&nbsp;login&nbsp;</a> se vuoi accedere al contenuto</p>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+
+{% endblock content %}

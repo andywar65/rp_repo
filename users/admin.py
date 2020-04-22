@@ -85,7 +85,7 @@ class ProfileAdmin(admin.ModelAdmin):
                     member.mc_state = '3-SV'
                     member.save()
 
-    control_mc.short_description = 'Gestisci CM/CMA'
+    control_mc.short_description = 'Controlla CM/CMA'
 
     def control_pay(self, request, queryset):
         queryset = queryset.filter( Q( sector = '1-YC' ) | Q( sector = '2-NC' ))

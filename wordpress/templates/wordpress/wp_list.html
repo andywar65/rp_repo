@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}RP | Archivio {% if category %}{{ category }} {% endif %}{{ page }}{% endblock title %}
+{% block content %}
+<h4><strong>
+  Archivio {% if category %}categoria {{ category|upper }} {% endif %}pag. {{ page }}
+</strong></h4>
+<p>Lista di articoli del vecchio sito (bordati in rosso quelli protetti da password)</p>
+{% if posts %}
+<div class="card-deck">
+  {% for post in posts %}
+    {% if post.visible %}
+      <div class="card" style="margin-bottom: 20px; min-width: 18rem;">
+    {% else %}
+      <div class="card border-danger" style="margin-bottom: 20px; min-width: 18rem;">
+    {% endif %}
+      <div class="card-header">
+        <a href="/archivio/{{ post.id }}">
+          <h4 class="card-title">{{ post.title|safe }}</h4></a>
+      </div>
+      <img class="card-img-top" src="{{ post.image }}" alt="">
+      <div class="card-body">
+        <em class="card-text">{{ post.excerpt|truncatewords_html:15|safe }}</em>
+      </div>
+    </div>
+
+  {% endfor %}
+</div>
+{% else %}
+<p>Non ci sono articoli da mostrare</p>
+{% endif %}
+<nav aria-label="Page navigation container">
+  <ul class="pagination justify-content-center">
+    {% if previous %}
+    <li><a href="?page={{ previous }}" class="page-link">&laquo; PRECEDENTI </a></li>
+    {% endif %}
+    {% if next %}
+    <li><a href="?page={{ next }}" class="page-link"> PROSSIMI &raquo;</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endblock content %}

@@ -1,0 +1,36 @@
+
+{% if post.image %}
+  <div class="row">
+    <img src="{{ post.image }}" width="100%" alt="" />
+  </div>
+{% endif %}
+<div class="row row-striped">
+  <div class="col-md-2"></div>
+  <div class="col-md-10">
+    <h3 class="text-uppercase"><strong>{{ post.title|safe }}</strong></h3>
+    <ul class="list-inline">
+      {% if post.author %}
+      <li class="list-inline-item">
+        <i class="fa fa-user" aria-hidden="true"></i>
+        {{ post.author }}
+      </li>
+      {% endif %}
+      <li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> {{ post.date|date:"d M Y" }}</li>
+      {% if post.categories %}
+        <li class="list-inline-item">
+          <i class="fa fa-folder-open" aria-hidden="true"></i>
+          {% for id, name in post.categories.items %}
+            <a href="/archivio/categoria/{{ id }}">{{ name|upper }}</a>
+          {% endfor %}
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+    {{ post.content|safe }}
+    <hr class="mb-4">
+  </div>
+</div>
