@@ -5,7 +5,8 @@ from users.models import User
 
 class EventForm(ModelForm):
     manager = forms.ModelChoiceField(label="Responsabile", required = False,
-        queryset = User.objects.with_perm('cronache.add_event').order_by('username'), )
+        queryset = User.objects.with_perm('cronache.add_event').order_by('last_name',
+        'first_name', 'username'), )
 
     class Meta:
         model = Event
