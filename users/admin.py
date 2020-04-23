@@ -41,6 +41,12 @@ class ProfileAdmin(admin.ModelAdmin):
     search_fields = ('fiscal_code', 'address')
     actions = [ 'control_mc', 'control_pay', 'reset_all', ]
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.has_perms('users.change_user'):
+            return qs
+        return qs.exclude(sector='0-NO')
+
     def change_view(self, request, object_id, form_url='', extra_context=None):
         member = self.get_object(request, object_id)
         if member.parent:
