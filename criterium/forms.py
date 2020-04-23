@@ -1,8 +1,8 @@
 from django import forms
 from django.forms import ModelForm
 from .models import Race, Athlete
-from pagine.models import Event
-from users.models import Member
+from cronache.models import Event
+from users.models import Profile
 
 class RaceForm(ModelForm):
     event = forms.ModelChoiceField(label="Evento", required = False,
@@ -23,9 +23,10 @@ class RaceForm(ModelForm):
 
 class AthleteForm(ModelForm):
     member = forms.ModelChoiceField(label="Iscritto", required = True,
-        queryset = Member.objects.filter(parent = None,
+        queryset = Profile.objects.filter(parent = None,
             sector__in = ['1-YC', '2-NC'],
-            user__is_active = True ).order_by('last_name', 'first_name'), )
+            user__is_active = True ).order_by('user__last_name',
+            'user__first_name'), )
 
     class Meta:
         model = Athlete

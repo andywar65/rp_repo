@@ -1,8 +1,10 @@
 from datetime import datetime
 from django.db import models
 
-from users.models import Member
-from pagine.models import Event, Location, generate_unique_slug
+from users.models import User
+from cronache.models import Event, Location
+from project.utils import generate_unique_slug
+
 from .choices import *
 
 class Race(models.Model):
@@ -64,11 +66,11 @@ class Race(models.Model):
 
 class AthleteManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().order_by('member__last_name',
-            'member__first_name')
+        return super().get_queryset().order_by('user__last_name',
+            'user__first_name')
 
 class Athlete(models.Model):
-    member = models.ForeignKey(Member, on_delete=models.CASCADE,
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
         verbose_name = 'Iscritto', null = True, )
     race = models.ForeignKey(Race, on_delete=models.CASCADE,
         editable = False, null = True, )
@@ -80,10 +82,10 @@ class Athlete(models.Model):
     objects = AthleteManager()
 
     def __str__(self):
-        return self.member.get_full_name()
+        return self.user.get_full_name()
 
     def get_full_name(self):
-        return self.member.get_full_name()
+        return self.user.get_full_name()
 
     class Meta:
         verbose_name = 'Atleta'

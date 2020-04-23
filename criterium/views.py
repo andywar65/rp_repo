@@ -2,7 +2,7 @@ from datetime import datetime
 from django.shortcuts import get_object_or_404
 from django.views.generic import (DetailView, RedirectView, ListView)
 from .models import (Race, Athlete, )
-from users.models import Member
+from users.models import User
 
 class RaceDetailView(DetailView):
     model = Race
@@ -13,10 +13,10 @@ class RaceDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         race = context['object']
         athletes = Athlete.objects.filter(race_id=race.id)
-        females = athletes.filter(member__gender='F').order_by('-points',
-            'placement', 'member__last_name', 'member__first_name')
-        males = athletes.filter(member__gender='M').order_by('-points',
-            'placement', 'member__last_name', 'member__first_name')
+        females = athletes.filter(user__profile__gender='F').order_by('-points',
+            'placement', 'user__last_name', 'user__first_name')
+        males = athletes.filter(user__profile__gender='M').order_by('-points',
+            'placement', 'user__last_name', 'user__first_name')
         context['females'] = females
         context['males'] = males
         return context
@@ -52,12 +52,12 @@ class RaceListAthleteView(RaceListMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context = self.get_context_years(context)
-        member = get_object_or_404(Member, pk=self.kwargs['id'])
-        context['name'] = member.get_full_name_reverse()
+        user = get_object_or_404(User, pk=self.kwargs['id'])
+        context['name'] = user.get_full_name()
         context['id'] = member.pk
         race_list = context['all_races'].values_list('id', flat = True)
         athletes = Athlete.objects.filter(race_id__in = race_list,
-            member_id = context['id'])
+            user_id = context['id'])
         if athletes:
             first = athletes.first()
             race_dict = {}
@@ -80,14 +80,14 @@ class RaceListView(RaceListMixin, ListView):
     def get_athlete_dict(self, athletes):
         athl_dict = {}
         name_dict = {}
-        athl_list = athletes.values_list('member_id', flat = True)
+        athl_list = athletes.values_list('user_id', flat = True)
         athl_list = list(dict.fromkeys(athl_list))
         for athl in athl_list:
-            athlete = athletes.filter(member_id=athl)
+            athlete = athletes.filter(user_id=athl)
             point_sum = sum(athlete.values_list('points', flat = True))
             first = athlete.first()
-            athl_dict[first.member.pk] = point_sum
-            name_dict[first.member.pk] = first.member.get_full_name_reverse()
+            athl_dict[first.user.pk] = point_sum
+            name_dict[first.user.pk] = first.user.get_full_name()
         # thanks to https://stackoverflow.com/questions/613183/
         # how-do-i-sort-a-dictionary-by-value
         athl_dict = {k: v for k, v in sorted(athl_dict.items(),
@@ -101,9 +101,9 @@ class RaceListView(RaceListMixin, ListView):
         context = self.get_context_years(context)
         race_list = context['all_races'].values_list('id', flat = True)
         athletes = Athlete.objects.filter(race_id__in = race_list)
-        females = athletes.filter(member__gender = 'F')
+        females = athletes.filter(user__profile__gender = 'F')
         context['females'] = self.get_athlete_dict(females)
-        males = athletes.filter(member__gender = 'M')
+        males = athletes.filter(user__profile__gender = 'M')
         context['males'] = self.get_athlete_dict(males)
         return context
 
