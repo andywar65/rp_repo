@@ -231,12 +231,14 @@ class ProfileDeleteView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         user = User.objects.get(id = self.request.user.id )
         user.is_active = False
-        user.first_name = ''
-        user.last_name = ''
         user.email = ''
         user.save()
         profile = Profile.objects.get(pk = user.id)
+        gender = profile.gender
         profile.delete()
+        profile = Profile.objects.create(user = user)
+        profile.gender = gender
+        profile.save()
         return super(ProfileDeleteView, self).form_valid(form)
 
 class TemplateDeletedView(TemplateView):
@@ -262,7 +264,11 @@ class ProfileDeleteChildView(LoginRequiredMixin, FormView):
         user.email = ''
         user.save()
         profile = Profile.objects.get(pk = user.id)
+        gender = profile.gender
         profile.delete()
+        profile = Profile.objects.create(user = user)
+        profile.gender = gender
+        profile.save()
         return super(ProfileDeleteChildView, self).form_valid(form)
 
 class TemplateDeletedChildView(TemplateView):
