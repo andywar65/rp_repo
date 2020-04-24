@@ -43,7 +43,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        if request.user.has_perms('users.change_user'):
+        if request.user.has_perm('users.change_user'):
             return qs
         return qs.exclude(sector='0-NO')
 
