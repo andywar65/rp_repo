@@ -67,5 +67,9 @@ def page_by_path(request, path):
     if not page.get_path() == request.path:
         raise Http404("Il request path non corrisponde al get path")
     adjacent = page.get_adjacent_pages()
+    if last == 'dati-societari':
+        society = get_object_or_404(Society, title = 'Rifondazione Podistica')
+        return render(request, 'pages/society_page.html', { 'page': page,
+            'adjacent': adjacent, 'society': society})
     return render(request, 'pages/tree_page.html', { 'page': page,
         'adjacent': adjacent, })
