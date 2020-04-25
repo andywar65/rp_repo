@@ -1,0 +1,34 @@
+{% extends 'pages/tree_page.html'%}
+
+{% block before_tree_page_render %}
+
+{% if society %}
+  <h4 id="dati-societari">Dati societari</h4>
+    <ul>
+      <li>Nome: {{ society.title }}</li>
+      <li>Denominazione: {{ society.denomination }}</li>
+      <li>Sede: {{ society.location.address }}</li>
+      <li>Indirizzo Email: {{ society.location.email }}</li>
+      <li>Registro CONI: {{ society.coni }}</li>
+      <li>Affiliazione FIDAL: {{ society.fidal }}</li>
+      <li>Codice Fiscale: {{ society.fiscal_code }}</li>
+      <li>Codice IBAN: {{ society.iban }}</li>
+    </ul>
+  <h4 id="dirigenti">Dirigenti</h4>
+    <ul>
+      <li>{{ society.president.get_full_name }} (Presidente)</li>
+      {% for member in society.executive.all %}
+      <li>{{ member.get_full_name }}</li>
+      {% endfor %}
+    </ul>
+  <h4 id="istruttori">Istruttori</h4>
+    <ul>
+      {% for member in society.trainers.all %}
+      <li>{{ member.get_full_name }}</li>
+      {% endfor %}
+    </ul>
+{% else %}
+  <p>Mancano i dati societari</p>
+{% endif %}
+
+{% endblock before_tree_page_render %}

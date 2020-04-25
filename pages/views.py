@@ -5,6 +5,7 @@ from streamblocks.models import HomeButton
 
 from blog.models import Article
 from cronache.models import Event
+from direzione.models import Society
 from .models import ( HomePage, TreePage )
 
 class HomeTemplateView(TemplateView):
@@ -46,7 +47,15 @@ class TreePageDetailView(DetailView):
             raise Http404("Il request path non corrisponde al get path")
         context = super().get_context_data(**kwargs)
         context['adjacent'] = self.object.get_adjacent_pages()
+        if self.kwargs['slug'] == 'dati-societari':
+            context['society'] = get_object_or_404(Society,
+                title = 'Rifondazione Podistica')
         return context
+
+    def get_template_names(self):
+        if self.kwargs['slug'] == 'dati-societari':
+            return 'pages/society_page.html'
+        return super(TreePageDetailView, self).get_template_names()
 
 #unable to use class based view!
 def page_by_path(request, path):

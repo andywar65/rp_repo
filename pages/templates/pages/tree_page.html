@@ -26,9 +26,13 @@
       {% endfor %}{% endwith %}
     </ul>
     {% endif %}
+    {% block before_tree_page_render %}
+    {% endblock before_tree_page_render %}
     <div>
       {{ page.stream.render }}
     </div>
+    {% block after_tree_page_render %}
+    {% endblock after_tree_page_render %}
     {% if page.summary %}<a href="#sommario">Torna al sommario</a>{% endif %}
     {% if page.navigation %}
       <hr class="mb-4">
