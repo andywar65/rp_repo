@@ -5,6 +5,7 @@ from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 
 from blog.models import Article, UserUpload
 from pages.models import TreePage
+from cronache.models import Event
 
 class ValidateForm(forms.Form):
     q = forms.CharField(max_length=100)
