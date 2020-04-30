@@ -73,14 +73,6 @@ class Location(models.Model):
         verbose_name_plural = 'Luoghi'
         ordering = ('id', )
 
-#def update_indexed_paragraphs(stream_list, type, id):
-    #for block in stream_list:
-        #if block['model_name'] == 'IndexedParagraph':
-            #par = IndexedParagraph.objects.get(id = block['id'])
-            #par.parent_type = type
-            #par.parent_id = id
-            #par.save()
-
 class Event(models.Model):
     fb_image = FileBrowseField("Immagine", max_length=200, directory="events/",
         extensions=[".jpg", ".png", ".jpeg", ".gif", ".tif", ".tiff"],
@@ -152,8 +144,8 @@ class Event(models.Model):
             return True
         return False
 
-    def get_uploads(self):
-        return UserUpload.objects.filter(event_id=self.id)
+    #def get_uploads(self):
+        #return UserUpload.objects.filter(event_id=self.id)
 
     def get_path(self):
         return '/calendario/' + self.date.strftime("%Y/%m/%d") + '/' + self.slug

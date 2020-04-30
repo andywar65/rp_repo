@@ -9,6 +9,7 @@ from django.views.generic.dates import (ArchiveIndexView, YearArchiveView,
 from taggit.models import Tag
 
 from .models import (Location, Event, )
+from blog.models import UserUpload
 
 class ListLocation(ListView):
     model = Location
@@ -75,3 +76,9 @@ class DetailEvent(DetailView):
     model = Event
     context_object_name = 'event'
     slug_field = 'slug'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        uploads = UserUpload.objects.filter(event_id = self.object.id)
+        context['all_uploads'] = uploads
+        return context

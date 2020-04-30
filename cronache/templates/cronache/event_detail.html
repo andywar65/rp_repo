@@ -54,10 +54,10 @@
               <a href="/calendario/contributi/?event_id={{ event.id }}">
               Aggiungi un contributo</a>
             </div>
-            {% if event.get_uploads %}
+            {% if all_uploads %}
             <hr class="mb-4">
             <div class="card-deck">
-              {% for upload in event.get_uploads %}
+              {% for upload in all_uploads %}
                 {% include 'cronache/uploads.html' %}
               {% endfor %}
             </div>
