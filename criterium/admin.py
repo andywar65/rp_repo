@@ -4,7 +4,7 @@ from .forms import RaceForm, AthleteForm
 
 class AthleteInline(admin.TabularInline):
     model = Athlete
-    fields = ('member', 'points', 'placement', 'time')
+    fields = ('user', 'points', 'placement', 'time')
     extra = 0
     form = AthleteForm
 

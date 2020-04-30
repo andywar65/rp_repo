@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from .models import Race, Athlete
 from cronache.models import Event
-from users.models import Profile
+from users.models import User
 
 class RaceForm(ModelForm):
     event = forms.ModelChoiceField(label="Evento", required = False,
@@ -22,11 +22,10 @@ class RaceForm(ModelForm):
         fields = '__all__'
 
 class AthleteForm(ModelForm):
-    member = forms.ModelChoiceField(label="Iscritto", required = True,
-        queryset = Profile.objects.filter(parent = None,
-            sector__in = ['1-YC', '2-NC'],
-            user__is_active = True ).order_by('user__last_name',
-            'user__first_name'), )
+    user = forms.ModelChoiceField(label="Iscritto", required = True,
+        queryset = User.objects.filter(profile__parent = None,
+            profile__sector__in = ['1-YC', '2-NC'],
+            is_active = True ).order_by('last_name', 'first_name'), )
 
     class Meta:
         model = Athlete

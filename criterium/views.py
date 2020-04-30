@@ -52,9 +52,9 @@ class RaceListAthleteView(RaceListMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context = self.get_context_years(context)
-        user = get_object_or_404(User, pk=self.kwargs['id'])
+        user = get_object_or_404(User, id=self.kwargs['id'])
         context['name'] = user.get_full_name()
-        context['id'] = member.pk
+        context['id'] = user.id
         race_list = context['all_races'].values_list('id', flat = True)
         athletes = Athlete.objects.filter(race_id__in = race_list,
             user_id = context['id'])
