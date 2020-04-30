@@ -50,7 +50,7 @@
         <tbody>
           {% for female in females %}
           <tr>
-            <td>{{ female.member.get_full_name_reverse }}</td>
+            <td>{{ female.user.get_full_name }}</td>
             <td>{{ female.points }}</td>
             <td>{{ female.placement|default_if_none:"--" }}</td>
             <td>{{ female.time|time:"H:i:s" }}</td>
@@ -75,7 +75,7 @@
         <tbody>
           {% for male in males %}
           <tr>
-            <td>{{ male.member.get_full_name_reverse }}</td>
+            <td>{{ male.user.get_full_name }}</td>
             <td>{{ male.points }}</td>
             <td>{{ male.placement|default_if_none:"--" }}</td>
             <td>{{ male.time|time:"H:i:s" }}</td>
