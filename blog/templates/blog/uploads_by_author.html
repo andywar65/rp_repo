@@ -20,8 +20,12 @@
         <p class="card-text">{{ upload.body }}</p>
       </div>
       <div class="card-footer">
-        Caricato il {{ upload.date|date:"d M Y"}} in
-          <a href="{{ upload.post.get_path }}">{{ upload.post.title }}</a>
+        Caricato il {{ upload.date|date:"d M Y"}}
+          {% if upload.post %}in
+            <a href="{{ upload.post.get_path }}">{{ upload.post.title }}</a>
+          {% elif upload.event %}in
+            <a href="{{ upload.event.get_path }}">{{ upload.event.title }}</a>
+          {% endif %}
       </div>
     </div>
     {% endfor %}
