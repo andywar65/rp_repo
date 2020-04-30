@@ -8,6 +8,7 @@ from django.views.generic.dates import (ArchiveIndexView, YearArchiveView,
 from taggit.models import Tag
 
 from users.models import User
+from cronache.models import Event
 
 from .forms import UserUploadForm
 from .models import (UserUpload, Article,)
