@@ -161,6 +161,10 @@ class Profile(models.Model):
             return FileObject(str(self.avatar))
         return
 
+    def is_complete(self):
+        return False
+    is_complete.short_description = 'Completo'
+
     def __str__(self):
         return self.user.get_full_name()
 

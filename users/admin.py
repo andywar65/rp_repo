@@ -34,7 +34,7 @@ class MemberPaymentInline(admin.TabularInline):
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('get_full_name', 'parent', 'is_trusted', 'sector',
-        'mc_state', 'total_amount', 'settled')
+        'is_complete', 'mc_state', 'total_amount', 'settled')
     list_editable = ('is_trusted', 'sector', 'mc_state', 'total_amount',
         'settled' )
     list_filter = ('sector', 'mc_state', 'settled')
