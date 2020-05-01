@@ -1,10 +1,13 @@
 import os
 from datetime import date, timedelta
 from PIL import Image
+
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.mail import EmailMessage
+from django.utils.html import format_html
+
 from filebrowser.fields import FileBrowseField
 from filebrowser.base import FileObject
 from .choices import *
@@ -162,7 +165,9 @@ class Profile(models.Model):
         return
 
     def is_complete(self):
-        return False
+        no = format_html('<img src="/static/admin/img/icon-no.svg" alt="False">')
+        yes = format_html('<img src="/static/admin/img/icon-yes.svg" alt="True">')
+        return no
     is_complete.short_description = 'Completo'
 
     def __str__(self):
