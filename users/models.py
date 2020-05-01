@@ -167,7 +167,16 @@ class Profile(models.Model):
     def is_complete(self):
         no = format_html('<img src="/static/admin/img/icon-no.svg" alt="False">')
         yes = format_html('<img src="/static/admin/img/icon-yes.svg" alt="True">')
-        return no
+        if self.parent and self.gender:
+            return yes
+        elif self.sector == '0-NO' and self.user.first_name:
+            return yes
+        elif self.sector == '3-FI' and self.user.first_name and self.fiscal_code:
+            return yes
+        elif self.user.first_name and self.gender and self.phone:
+            return yes
+        else:
+            return no
     is_complete.short_description = 'Completo'
 
     def __str__(self):
