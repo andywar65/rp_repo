@@ -16,7 +16,8 @@
       {% endif %}
       {% if race.location %}
       <li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i>
-        {{ race.get_location }}</li>
+        <a href="/luoghi/{{ race.get_location.slug }}">{{ race.get_location }}</a>
+      </li>
       {% endif %}
       {% if race.event %}
         <li class="list-inline-item"><i class="fa fa-link" aria-hidden="true"></i>
