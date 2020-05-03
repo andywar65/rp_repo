@@ -87,3 +87,11 @@ a:focus {
     color: #24890d;
     background-color: #e9ecef;
 }
+
+.gradient-mask {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  background: linear-gradient(to top, black, 30%, transparent);
+}
