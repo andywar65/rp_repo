@@ -3,7 +3,7 @@
 {% block title %}RP | Criterium {{ year }}-{{ year2 }} | {{ name }}{% endblock title %}
 {% block content %}
 <h4><strong>Criterium edizione
-  <a href="/criterium/{{ year }}-{{ year2 }}/">{{ year }}-{{ year2 }}</a> 
+  <a href="/criterium/{{ year }}-{{ year2 }}/">{{ year }}-{{ year2 }}</a>
   per l'atleta {{ name }}</strong></h4>
 <hr class="mb-4">
 {% if all_races %}
@@ -18,7 +18,7 @@
   </ul>
 {% else %}
     <div class="col-md-12">
-        <h4>Non sono registrate gare in questa edizione per questo atleta.</h4>
+        <p>Non sono registrate gare in questa edizione per questo atleta.</p>
     </div>
 {% endif %}
 <hr class="mb-4">
