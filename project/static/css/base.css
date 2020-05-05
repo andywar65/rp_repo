@@ -95,3 +95,7 @@ a:focus {
   bottom: 0;
   background: linear-gradient(to top, black, 30%, transparent);
 }
+
+.display-1 {
+  font-family: 'Special Elite', cursive;
+}
