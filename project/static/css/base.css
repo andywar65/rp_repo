@@ -2,6 +2,17 @@
     RP frontend styles
 */
 
+/* Special thanks to jeffdsalisbury@gmail.com
+*/
+@font-face {
+    font-family: 'franc_gothique_brushregular';
+    src: url('francgothiquebrush-webfont.woff2') format('woff2'),
+         url('francgothiquebrush-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -97,5 +108,5 @@ a:focus {
 }
 
 .display-1 {
-  font-family: 'Special Elite', cursive;
+  font-family: 'franc_gothique_brushregular';
 }
