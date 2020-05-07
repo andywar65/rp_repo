@@ -39,8 +39,8 @@
           <p>Ci stiamo lavorando! intanto aggiungete qualche contributo.</p>
           {% endif %}
           <hr class="mb-4">
-          {% if user.is_authenticated %}
-            {% if event.restr_stream.render and user.profile.is_trusted %}
+          {% if user.is_authenticated and user.profile.is_trusted %}
+            {% if event.restr_stream.render %}
             <div class="row">
               <h4><strong>Area riservata</strong></h4>
             </div>
