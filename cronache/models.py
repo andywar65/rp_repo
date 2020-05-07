@@ -124,10 +124,12 @@ class Event(models.Model):
             return 'warning'
 
     def get_image(self):
+        image = None
         gallery_list = self.carousel.from_json()
         if gallery_list:
             gallery = gallery_list[0]
             image = LandscapeGallery.objects.filter( id__in = gallery['id'] ).first()
+        if image:
             return image.fb_image
         elif self.location.fb_image:
             return self.location.fb_image
