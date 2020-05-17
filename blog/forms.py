@@ -12,8 +12,7 @@ class UserUploadForm(ModelForm):
 
 class ArticleForm(ModelForm):
     author = forms.ModelChoiceField(label="Autore", required = False,
-        queryset = User.objects.with_perm('blog.view_article').order_by('last_name',
-        'first_name', 'username'), )
+        queryset = User.objects.with_perm('blog.view_article'), )
 
     class Meta:
         model = Article
