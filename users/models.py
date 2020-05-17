@@ -59,6 +59,7 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'Utente'
         verbose_name_plural = 'Utenti'
+        ordering = ('last_name', 'first_name', 'username')
 
 class CourseSchedule(models.Model):
     full = models.CharField(max_length = 32, verbose_name = 'Giorno e ora',)

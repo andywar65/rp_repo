@@ -156,10 +156,32 @@ class Event(models.Model):
         if not self.slug:
             self.slug = generate_unique_slug(Event, self.title)
         self.last_updated = now()
-        self.stream_search = strip_tags(self.stream.render)
-        self.stream_search += strip_tags(self.upgrade_stream.render)
-        self.stream_search += strip_tags(self.chron_stream.render)
-        self.stream_search += strip_tags(self.restr_stream.render)
+        #in tests treats stream as str instead of StreamField object
+        #probably should use transaction instaed
+        #but for now this patch works
+        if isinstance(self.stream, str):
+            from streamfield.base import StreamObject
+            tmp = StreamObject( value = self.stream,
+                model_list=[ IndexedParagraph, CaptionedImage,
+                    Gallery, DownloadableFile, LinkableList, BoxedText ], )
+            self.stream_search = strip_tags(tmp.render)
+            tmp2 = StreamObject( value = self.upgrade_stream,
+                model_list=[ EventUpgrade, IndexedParagraph,
+                    DownloadableFile ], )
+            self.stream_search += strip_tags(tmp2.render)
+            tmp3 = StreamObject( value = self.chron_stream,
+                model_list=[ IndexedParagraph, CaptionedImage,
+                    Gallery, DownloadableFile, LinkableList, BoxedText ], )
+            self.stream_search += strip_tags(tmp3.render)
+            tmp4 = StreamObject( value = self.restr_stream,
+                model_list=[ IndexedParagraph, CaptionedImage,
+                    Gallery, DownloadableFile, LinkableList, BoxedText ], )
+            self.stream_search += strip_tags(tmp4.render)
+        else:
+            self.stream_search = strip_tags(self.stream.render)
+            self.stream_search += strip_tags(self.upgrade_stream.render)
+            self.stream_search += strip_tags(self.chron_stream.render)
+            self.stream_search += strip_tags(self.restr_stream.render)
         if self.notice == 'SPAM':
             message = self.title + '\n'
             message += self.intro + '\n'
