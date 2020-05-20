@@ -3,6 +3,7 @@ from django.urls import reverse
 
 from streamblocks.models import IndexedParagraph
 from blog.models import Article, UserUpload
+from cronache.models import Event
 from pages.models import TreePage
 from users.models import User
 from .utils import generate_unique_slug, generate_unique_username
@@ -36,7 +37,12 @@ class SearchTest(TestCase):
             date = '2020-05-10 15:53:00+02',
             stream = '[{"unique_id":"4h7dps","model_name":"IndexedParagraph","id":77,"options":{}}]',
             )
-        UserUpload.objects.create(user=usr, post=article, body='Foo Bar?')
+        event = Event.objects.create(title='Event 4',
+            date = '2020-05-10 15:53:00+02',
+            stream = '[{"unique_id":"4h7dps","model_name":"IndexedParagraph","id":77,"options":{}}]',
+            )
+        UserUpload.objects.create(user=usr, post=article, event=event,
+            body='Foo Bar?')
         TreePage.objects.create(title='Page 2', path = '0001', depth = 1,
             numchild = 0,
             stream = '[{"unique_id":"4h6dps","model_name":"IndexedParagraph","id":77,"options":{}}]',
@@ -70,6 +76,12 @@ class SearchTest(TestCase):
         self.assertQuerysetEqual(response.context['all_blogs'], article,
             transform=lambda x: x)
 
+    def test_search_results_view_context_events(self):
+        event = Event.objects.filter(slug='event-4')
+        response = self.client.get('/search/?q=foo')
+        self.assertQuerysetEqual(response.context['all_events'], event,
+            transform=lambda x: x)
+
     def test_search_results_view_context_uploads(self):
         article = Article.objects.filter(slug='article-4')
         response = self.client.get('/search/?q=foo')
@@ -80,4 +92,10 @@ class SearchTest(TestCase):
         page = TreePage.objects.filter(slug='page-2')
         response = self.client.get('/search/?q=foo')
         self.assertQuerysetEqual(response.context['pages'], page,
+            transform=lambda x: x)
+
+    def test_search_results_view_context_uploads_events(self):
+        event = Event.objects.filter(slug='event-4')
+        response = self.client.get('/search/?q=foo')
+        self.assertQuerysetEqual(response.context['evt_uploads'], event,
             transform=lambda x: x)
