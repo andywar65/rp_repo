@@ -52,8 +52,8 @@ class Race(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:  # create
             self.slug = generate_unique_slug(Race, self.title)
-        if not self.date:
-            self.date = self.event.date
+        #if not self.date:
+            #self.date = self.event.date.date()
         super(Race, self).save(*args, **kwargs)
 
     def __str__(self):
