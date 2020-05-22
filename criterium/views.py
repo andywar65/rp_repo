@@ -1,6 +1,9 @@
 from datetime import datetime
+
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 from django.views.generic import (DetailView, RedirectView, ListView)
+
 from .models import (Race, Athlete, )
 from users.models import User
 
@@ -12,6 +15,9 @@ class RaceDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         race = context['object']
+        edition = race.get_edition()
+        if edition != str(self.kwargs['year'])+'-'+str(self.kwargs['year2']):
+            raise Http404("Wrong edition")
         athletes = Athlete.objects.filter(race_id=race.id)
         females = athletes.filter(user__profile__gender='F').order_by('-points',
             'placement', 'user__last_name', 'user__first_name')

@@ -69,3 +69,37 @@ class RaceViewTest(TestCase):
         #https://stackoverflow.com/questions/17685023/how-do-i-test-django-querysets-are-equal
         self.assertQuerysetEqual(response.context['all_races'], all_races,
             transform=lambda x: x)
+
+    def test_race_list_view_context_females(self):
+        response = self.client.get('/criterium/2019-2020/')
+        self.assertEqual(response.context['females'], {})
+
+    def test_race_list_view_context_males(self):
+        race = Race.objects.get(slug='race-1')
+        user = User.objects.get(username='juantorena')
+        athlete = Athlete.objects.get(user=user, race=race)
+        response = self.client.get('/criterium/2019-2020/')
+        self.assertEqual(response.context['males'],
+            {athlete.id: ('Alberto Juantorena', 1)})
+
+    def test_race_list_view_context_status(self):
+        #this test will fail in a hundred years
+        response = self.client.get('/criterium/2119-2120/')
+        self.assertEqual(response.context['status'], 'provvisoria')
+
+    def test_race_list_view_context_status(self):
+        response = self.client.get('/criterium/2018-2019/')
+        self.assertEqual(response.context['status'], 'definitiva')
+
+    def test_race_detail_view_status_code(self):
+        response = self.client.get('/criterium/2019-2020/race-1/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_race_detail_view_status_code_not_found(self):
+        #we have to control this
+        response = self.client.get('/criterium/2019-2020/race-2/')
+        self.assertEqual(response.status_code, 404)
+
+    def test_race_detail_view_template(self):
+        response = self.client.get('/criterium/2019-2020/race-1/')
+        self.assertTemplateUsed(response, 'criterium/race_detail.html')
