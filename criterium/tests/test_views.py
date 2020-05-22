@@ -75,6 +75,7 @@ class RaceViewTest(TestCase):
         self.assertEqual(response.context['females'], {})
 
     def test_race_list_view_context_males(self):
+        #This test only passes if isolated
         race = Race.objects.get(slug='race-1')
         user = User.objects.get(username='juantorena')
         athlete = Athlete.objects.get(user=user, race=race)
@@ -95,11 +96,21 @@ class RaceViewTest(TestCase):
         response = self.client.get('/criterium/2019-2020/race-1/')
         self.assertEqual(response.status_code, 200)
 
-    def test_race_detail_view_status_code_not_found(self):
-        #we have to control this
+    def test_race_detail_view_status_code_wrong_edition(self):
         response = self.client.get('/criterium/2019-2020/race-2/')
         self.assertEqual(response.status_code, 404)
 
     def test_race_detail_view_template(self):
         response = self.client.get('/criterium/2019-2020/race-1/')
         self.assertTemplateUsed(response, 'criterium/race_detail.html')
+
+    def test_race_detail_view_context_females(self):
+        females = Athlete.objects.filter(user__profile__gender='F')
+        response = self.client.get('/criterium/2019-2020/race-1/')
+        self.assertQuerysetEqual(response.context['females'], females)
+
+    def test_race_detail_view_context_males(self):
+        males = Athlete.objects.filter(user__profile__gender='M')
+        response = self.client.get('/criterium/2019-2020/race-1/')
+        self.assertQuerysetEqual(response.context['males'], males,
+            transform=lambda x: x)
