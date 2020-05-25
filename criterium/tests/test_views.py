@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.urls import reverse
 
@@ -13,7 +15,13 @@ class RaceViewTest(TestCase):
         # Set up non-modified objects used by all test methods
         user = User.objects.create_user(username='juantorena',
             first_name = 'Alberto', last_name = 'Juantorena',
-            password='P4s5W0r6' )
+            password='P4s5W0r6', is_staff = True )
+        content_type = ContentType.objects.get_for_model(Race)
+        permission = Permission.objects.get(
+            codename='add_race',
+            content_type=content_type,
+        )
+        user.user_permissions.add(permission)
         profile = Profile.objects.get(pk=user.id)
         profile.gender = 'M'
         profile.sector = '2-NC'
@@ -164,3 +172,18 @@ class RaceViewTest(TestCase):
         response = self.client.get(reverse('criterium:athlete',
             kwargs={'year': 2020, 'year2': 2021, 'id': user.id}))
         self.assertEqual(response.context['all_races'], None)
+
+    def test_add_race_date_validation(self):
+        self.client.post('/admin/login/', {'username':'juantorena',
+            'password':'P4s5W0r6'})
+        response = self.client.post('/admin/criterium/race/add/',
+            {'title': 'Race 5'})
+        self.assertEqual(response.context['errors'],
+            [['Senza evento occorre inserire almeno la data.']])
+
+    def test_add_race_validated_and_redirected(self):
+        self.client.post('/admin/login/', {'username':'juantorena',
+            'password':'P4s5W0r6'})
+        response = self.client.post('/admin/criterium/race/add/',
+            {'title': 'Race 5', 'date': '2020-05-26'})
+        self.assertEqual(response.status_code, 302)
