@@ -32,6 +32,8 @@ class RaceListMixin:
     def get_queryset(self):
         year1 = self.kwargs['year']
         year2 = self.kwargs['year2']
+        if year2 != year1+1:
+            raise Http404("Edition years are not consecutive")
         qs = Race.objects.filter(date__gte = datetime(year1, 11, 1),
             date__lt = datetime(year2, 11, 1)).order_by('date')
         return qs

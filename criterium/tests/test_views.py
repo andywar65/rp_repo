@@ -60,6 +60,10 @@ class RaceViewTest(TestCase):
         response = self.client.get('/criterium/2019-2020/')
         self.assertEqual(response.status_code, 200)
 
+    def test_race_list_view_not_consecutive_status_code(self):
+        response = self.client.get('/criterium/2019-2021/')
+        self.assertEqual(response.status_code, 404)
+
     def test_race_list_view_template(self):
         response = self.client.get('/criterium/2019-2020/')
         self.assertTemplateUsed(response, 'criterium/race_list.html')
