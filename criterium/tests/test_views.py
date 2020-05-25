@@ -26,6 +26,8 @@ class RaceViewTest(TestCase):
         race = Race.objects.create(title='Race 1', event=event)
         Race.objects.create(title='Race 2', date='2020-12-11',
             location = location)
+        Race.objects.create(title='Race 3', date='2020-05-11',
+            location = location)
         Athlete.objects.create(user=user, race=race, points=1)
 
     def test_race_redirect_view_status_code(self):
@@ -63,7 +65,8 @@ class RaceViewTest(TestCase):
         self.assertTemplateUsed(response, 'criterium/race_list.html')
 
     def test_race_list_view_context_races(self):
-        all_races = Race.objects.filter(slug='race-1')
+        all_races = Race.objects.filter(date__gte = datetime(2019, 11, 1),
+            date__lt = datetime(2020, 11, 1)).order_by('date')
         response = self.client.get('/criterium/2019-2020/')
         #workaround found in
         #https://stackoverflow.com/questions/17685023/how-do-i-test-django-querysets-are-equal
@@ -114,3 +117,46 @@ class RaceViewTest(TestCase):
         response = self.client.get('/criterium/2019-2020/race-1/')
         self.assertQuerysetEqual(response.context['males'], males,
             transform=lambda x: x)
+
+    def test_race_list_athlete_view_status_code(self):
+        user = User.objects.get(username='juantorena')
+        response = self.client.get(reverse('criterium:athlete',
+            kwargs={'year': 2019, 'year2': 2020, 'id': user.id}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_race_list_athlete_view_athlete_not_found(self):
+        response = self.client.get(reverse('criterium:athlete',
+            kwargs={'year': 2019, 'year2': 2020, 'id': 404}))
+        self.assertEqual(response.status_code, 404)
+
+    def test_race_list_athlete_view_template(self):
+        user = User.objects.get(username='juantorena')
+        response = self.client.get(reverse('criterium:athlete',
+            kwargs={'year': 2019, 'year2': 2020, 'id': user.id}))
+        self.assertTemplateUsed(response, 'criterium/race_list_athlete.html')
+
+    def test_race_list_athlete_view_context_name(self):
+        user = User.objects.get(username='juantorena')
+        response = self.client.get(reverse('criterium:athlete',
+            kwargs={'year': 2019, 'year2': 2020, 'id': user.id}))
+        self.assertEqual(response.context['name'], 'Alberto Juantorena')
+
+    def test_race_list_athlete_view_context_id(self):
+        user = User.objects.get(username='juantorena')
+        response = self.client.get(reverse('criterium:athlete',
+            kwargs={'year': 2019, 'year2': 2020, 'id': user.id}))
+        self.assertEqual(response.context['id'], user.id)
+
+    def test_race_list_athlete_view_context_races(self):
+        race = Race.objects.get(slug='race-1')
+        user = User.objects.get(username='juantorena')
+        response = self.client.get(reverse('criterium:athlete',
+            kwargs={'year': 2019, 'year2': 2020, 'id': user.id}))
+        self.assertEqual(response.context['all_races'], {race: 1})
+
+    def test_race_list_athlete_view_context_races_none(self):
+        race = Race.objects.get(slug='race-2')
+        user = User.objects.get(username='juantorena')
+        response = self.client.get(reverse('criterium:athlete',
+            kwargs={'year': 2020, 'year2': 2021, 'id': user.id}))
+        self.assertEqual(response.context['all_races'], None)
