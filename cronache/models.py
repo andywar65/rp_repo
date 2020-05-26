@@ -138,16 +138,10 @@ class Event(models.Model):
     def get_tags(self):
         return list(self.tags.names())
 
-    #def get_upgrades(self):
-        #return EventUpgrade.objects.filter(event_id=self.id)
-
     def get_chronicle(self):
         if self.date.date() < datetime.today().date():
             return True
         return False
-
-    #def get_uploads(self):
-        #return UserUpload.objects.filter(event_id=self.id)
 
     def get_path(self):
         return '/calendario/' + self.date.strftime("%Y/%m/%d") + '/' + self.slug
@@ -207,21 +201,3 @@ class Event(models.Model):
         verbose_name = 'Evento'
         verbose_name_plural = 'Eventi'
         ordering = ('-date', )
-
-#class EventUpgrade(models.Model):
-    #event = models.ForeignKey(Event, on_delete = models.CASCADE,
-        #null = True, related_name='event_upgrades')
-    #title = models.CharField('Titolo',
-        #help_text="Il titolo dell'aggiornamento",
-        #max_length = 50)
-    #date = models.DateTimeField('Data', default = now)
-    #body = models.TextField('Aggiornamento',
-        #help_text = "Accetta tag HTML.", )
-
-    #def __str__(self):
-        #return self.title
-
-    #class Meta:
-        #verbose_name = 'Aggiornamento'
-        #verbose_name_plural = 'Aggiornamenti'
-        #ordering = ('-date', )

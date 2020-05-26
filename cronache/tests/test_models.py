@@ -1,74 +1,63 @@
 from django.test import TestCase
+from django.utils.timezone import now
 
-from users.models import User, Profile
+#from users.models import User, Profile
 from cronache.models import Event, Location
-from criterium.models import Race, Athlete
+#from criterium.models import Race, Athlete
 
-class RaceModelTest(TestCase):
+class LocationModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
-        user = User.objects.create_user(username='juantorena',
-            first_name = 'Alberto', last_name = 'Juantorena',
-            password='P4s5W0r6' )
-        profile = Profile.objects.get(pk=user.id)
-        profile.gender = 'M'
-        profile.sector = '2-NC'
-        profile.save()
+        Location.objects.create(title='Here', address='Nowhere St.',
+            gmap_embed = 'http')
+        Location.objects.create(title='There', address='Somewhere St.',
+            gmap_embed = '<iframe src="http://foo.bar"></iframe>',
+            gmap_link = 'http://foo.bar')
+
+    def test_location_model_str_method(self):
+        location = Location.objects.get(slug='here')
+        self.assertEqual(location.__str__(), 'Here')
+
+    def test_location_model_get_gmap_link_none(self):
+        location = Location.objects.get(slug='here')
+        self.assertEqual(location.get_gmap_link(), '-')
+
+    def test_location_model_get_gmap_link(self):
+        location = Location.objects.get(slug='there')
+        self.assertEqual(location.get_gmap_link(),
+            '<a href="http://foo.bar" class="btn" target="_blank">Mappa</a>')
+
+    def test_location_model_stripped_gmap_embed(self):
+        location = Location.objects.get(slug='there')
+        self.assertEqual(location.gmap_embed, 'http://foo.bar')
+
+class EventModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
         location = Location.objects.create(title='Here', address='Nowhere St.',
             gmap_embed = 'http')
-        event = Event.objects.create(title='Race event',
-            date = '2020-05-10 15:53:00+02', location = location
+        Event.objects.create(title='Past event',
+            date = '2019-05-10 15:53:00+02', location = location
             )
-        race = Race.objects.create(title='Race 1', event=event)
-        Race.objects.create(title='Race 2', date='2020-12-11',
-            location = location)
-        Athlete.objects.create(user=user, race=race, points=1)
+        Event.objects.create(title='Future event',
+            date = '2119-05-10 15:53:00+02', location = location
+            )
+        Event.objects.create(title='Today event', location = location
+            )
 
-    def test_race_get_date(self):
-        race = Race.objects.get(slug='race-2')
-        self.assertEquals(race.get_date(), race.date)
+    def test_event_model_str_method(self):
+        event = Event.objects.get(slug='today-event')
+        self.assertEqual(event.__str__(), 'Today event')
 
-    def test_race_get_date_from_event(self):
-        race = Race.objects.get(slug='race-1')
-        self.assertEquals(race.get_date(), race.event.date.date())
+    def test_event_model_get_badge_color_past(self):
+        event = Event.objects.get(slug='past-event')
+        self.assertEqual(event.get_badge_color(), 'secondary')
 
-    def test_race_get_edition(self):
-        race = Race.objects.get(slug='race-2')
-        self.assertEquals(race.get_edition(), '2020-2021')
+    def test_event_model_get_badge_color_future(self):
+        event = Event.objects.get(slug='future-event')
+        self.assertEqual(event.get_badge_color(), 'success')
 
-    def test_race_get_edition_from_event(self):
-        race = Race.objects.get(slug='race-1')
-        self.assertEquals(race.get_edition(), '2019-2020')
-
-    def test_race_get_path(self):
-        race = Race.objects.get(slug='race-2')
-        self.assertEquals(race.get_path(), '/criterium/2020-2021/race-2')
-
-    def test_race_get_path_from_event(self):
-        race = Race.objects.get(slug='race-1')
-        self.assertEquals(race.get_path(), '/criterium/2019-2020/race-1')
-
-    def test_race_get_location(self):
-        location = Location.objects.get(slug='here')
-        race = Race.objects.get(slug='race-2')
-        self.assertEquals(race.get_location(), location)
-
-    def test_race_get_location_from_event(self):
-        location = Location.objects.get(slug='here')
-        race = Race.objects.get(slug='race-1')
-        self.assertEquals(race.get_location(), location)
-
-    def test_race_str_method(self):
-        race = Race.objects.get(slug='race-1')
-        self.assertEquals(race.__str__(), 'Race 1')
-
-    def test_athlete_str_method(self):
-        user = User.objects.get(username='juantorena')
-        athlete = Athlete.objects.get(user_id=user.id)
-        self.assertEquals(athlete.__str__(), 'Alberto Juantorena')
-
-    def test_athlete_get_full_name(self):
-        user = User.objects.get(username='juantorena')
-        athlete = Athlete.objects.get(user_id=user.id)
-        self.assertEquals(athlete.get_full_name(), 'Alberto Juantorena')
+    def test_event_model_get_badge_color_today(self):
+        event = Event.objects.get(slug='today-event')
+        self.assertEqual(event.get_badge_color(), 'warning')
