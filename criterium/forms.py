@@ -14,7 +14,7 @@ class RaceForm(ModelForm):
         event = self.cleaned_data['event']
         if not date and not event:
             msg = 'Senza evento occorre inserire almeno la data.'
-            raise forms.ValidationError(msg)
+            raise forms.ValidationError(msg, code='no_date')
         return date
 
     class Meta:
