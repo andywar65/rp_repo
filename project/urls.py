@@ -40,7 +40,7 @@ urlpatterns = [
     path('convenzioni/', include('direzione.urls.conventions',
         namespace = 'conventions')),
     path('calendario/', include('cronache.urls.events', namespace = 'chronicles')),
-    path('luoghi/', include('cronache.urls.locations'), namespace = 'locations')),
+    path('luoghi/', include('cronache.urls.locations', namespace = 'locations')),
     path('archivio/', include('wordpress.urls', namespace = 'wordpress')),
     path('criterium/', include('criterium.urls', namespace = 'criterium')),
     path('articoli/', include('blog.urls.posts', namespace = 'blog')),

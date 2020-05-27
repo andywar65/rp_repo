@@ -11,44 +11,56 @@ class LocationViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
-        tag = Tag.objects.create( name='foo' )
-        usr = User.objects.create_user(username='logged_in',
-            password='P4s5W0r6')
-        profile = Profile.objects.get(pk=usr.id)
-        profile.is_trusted = True
-        profile.save()
-        User.objects.create_user(username='untrusted', password='P4s5W0r6')
-        article = Article.objects.create(id=34, title='Article 3',
-            date = '2020-05-10 15:53:00+02', author = usr
-            )
-        article.tags.add('foo')
-        Article.objects.create(title='Article 4',
-            date = '2020-05-10 15:58:00+02')
-        UserUpload.objects.create(user=usr, post=article, body='Foo Bar')
-        location = Location.objects.create(title='Where', address='Mean St.',
+        #tag = Tag.objects.create( name='foo' )
+        #usr = User.objects.create_user(username='logged_in',
+            #password='P4s5W0r6')
+        #profile = Profile.objects.get(pk=usr.id)
+        #profile.is_trusted = True
+        #profile.save()
+        #User.objects.create_user(username='untrusted', password='P4s5W0r6')
+        #article = Article.objects.create(id=34, title='Article 3',
+            #date = '2020-05-10 15:53:00+02', author = usr
+            #)
+        #article.tags.add('foo')
+        #Article.objects.create(title='Article 4',
+            #date = '2020-05-10 15:58:00+02')
+        #UserUpload.objects.create(user=usr, post=article, body='Foo Bar')
+        location = Location.objects.create(title='Where again', address='Mean St.',
             gmap_embed='http')
-        Event.objects.create(title='Birthday', date='2020-05-10 15:53:00+02',
-            location=location)
+        #Event.objects.create(title='Birthday', date='2020-05-10 15:53:00+02',
+            #location=location)
 
-    #def test_article_archive_index_view_status_code(self):
-        #response = self.client.get(reverse('blog:post_index'))
-        #self.assertEqual(response.status_code, 200)
+    def test_locations_list_view_status_code(self):
+        response = self.client.get(reverse('locations:locations'))
+        self.assertEqual(response.status_code, 200)
 
-    #def test_article_archive_index_view_template(self):
-        #response = self.client.get(reverse('blog:post_index'))
-        #self.assertTemplateUsed(response, 'blog/article_archive.html')
+    def test_locations_list_view_template(self):
+        response = self.client.get(reverse('locations:locations'))
+        self.assertTemplateUsed(response, 'cronache/location_list.html')
 
-    #def test_article_archive_index_view_template_tagged(self):
-        #response = self.client.get('/articoli/?tag=foo')
-        #self.assertTemplateUsed(response, 'blog/article_archive.html')
-
-    #def test_article_archive_index_view_context_object(self):
-        #all_posts = Article.objects.all()
-        #response = self.client.get(reverse('blog:post_index'))
+    def test_locations_list_view_context_object(self):
+        all_locations = Location.objects.all()
+        response = self.client.get(reverse('locations:locations'))
         #workaround found in
         #https://stackoverflow.com/questions/17685023/how-do-i-test-django-querysets-are-equal
-        #self.assertQuerysetEqual(response.context['posts'], all_posts,
-            #transform=lambda x: x)
+        self.assertQuerysetEqual(response.context['all_locations'],
+            all_locations, transform=lambda x: x)
+
+    def test_locations_detail_view_status_code(self):
+        response = self.client.get(reverse('locations:location',
+            kwargs={'slug': 'where-again'}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_locations_detail_view_template(self):
+        response = self.client.get(reverse('locations:location',
+            kwargs={'slug': 'where-again'}))
+        self.assertTemplateUsed(response, 'cronache/location_detail.html')
+
+    def test_locations_detail_view_context_object(self):
+        location = Location.objects.get(slug='where-again')
+        response = self.client.get(reverse('locations:location',
+            kwargs={'slug': 'where-again'}))
+        self.assertEqual(response.context['location'], location )
 
     #def test_article_archive_index_view_context_object_tagged(self):
         #all_posts = Article.objects.filter( tags__name='foo' )
@@ -73,7 +85,7 @@ class LocationViewTest(TestCase):
         #response = self.client.get(reverse('blog:post_year',
             #kwargs={'year': 2020}))
         #self.assertQuerysetEqual(response.context['posts'], all_posts,
-            transform=lambda x: x)
+            #transform=lambda x: x)
 
     #def test_article_month_archive_view_status_code(self):
         #response = self.client.get(reverse('blog:post_month',
