@@ -116,9 +116,9 @@ class Event(models.Model):
             """)
 
     def get_badge_color(self):
-        if self.date.date() > datetime.today().date():
+        if self.date.date() > now().date():
             return 'success'
-        elif self.date.date() < datetime.today().date():
+        elif self.date.date() < now().date():
             return 'secondary'
         else:
             return 'warning'
