@@ -11,7 +11,7 @@ class LocationViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
-        #tag = Tag.objects.create( name='foo' )
+        tag = Tag.objects.create( name='bar' )
         #usr = User.objects.create_user(username='logged_in',
             #password='P4s5W0r6')
         #profile = Profile.objects.get(pk=usr.id)
@@ -27,8 +27,9 @@ class LocationViewTest(TestCase):
         #UserUpload.objects.create(user=usr, post=article, body='Foo Bar')
         location = Location.objects.create(title='Where again', address='Mean St.',
             gmap_embed='http')
-        #Event.objects.create(title='Birthday', date='2020-05-10 15:53:00+02',
-            #location=location)
+        event = Event.objects.create(title='Birthday party',
+            date='2020-05-10 15:53:00+02', location=location)
+        event.tags.add('bar')
 
     def test_locations_list_view_status_code(self):
         response = self.client.get(reverse('locations:locations'))
@@ -62,13 +63,25 @@ class LocationViewTest(TestCase):
             kwargs={'slug': 'where-again'}))
         self.assertEqual(response.context['location'], location )
 
-    #def test_article_archive_index_view_context_object_tagged(self):
-        #all_posts = Article.objects.filter( tags__name='foo' )
-        #response = self.client.get('/articoli/?tag=foo')
-        #workaround found in
-        #https://stackoverflow.com/questions/17685023/how-do-i-test-django-querysets-are-equal
-        #self.assertQuerysetEqual(response.context['posts'], all_posts,
-            #transform=lambda x: x)
+    def test_event_archive_index_view_status_code(self):
+        response = self.client.get(reverse('chronicles:event_index'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_event_archive_index_view_template(self):
+        response = self.client.get(reverse('chronicles:event_index'))
+        self.assertTemplateUsed(response, 'cronache/event_archive.html')
+
+    def test_event_archive_index_view_context_object(self):
+        all_events = Event.objects.all()
+        response = self.client.get(reverse('chronicles:event_index'))
+        self.assertQuerysetEqual(response.context['all_events'],
+            all_events, transform=lambda x: x)
+
+    def test_event_archive_index_view_context_object_tagged(self):
+        all_events = Event.objects.filter( tags__name='bar' )
+        response = self.client.get('/calendario/?categoria=bar')
+        self.assertQuerysetEqual(response.context['all_events'],
+            all_events, transform=lambda x: x)
 
     #def test_article_year_archive_view_status_code(self):
         #response = self.client.get(reverse('blog:post_year',
