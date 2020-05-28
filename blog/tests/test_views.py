@@ -5,7 +5,6 @@ from taggit.models import Tag
 
 from users.models import User, Profile
 from blog.models import Article, UserUpload
-from cronache.models import Event, Location
 
 class ArticleViewTest(TestCase):
     @classmethod
@@ -25,10 +24,6 @@ class ArticleViewTest(TestCase):
         Article.objects.create(title='Article 4',
             date = '2020-05-10 15:58:00+02')
         UserUpload.objects.create(user=usr, post=article, body='Foo Bar')
-        location = Location.objects.create(title='Where', address='Mean St.',
-            gmap_embed='http')
-        Event.objects.create(title='Birthday', date='2020-05-10 15:53:00+02',
-            location=location)
 
     def test_article_archive_index_view_status_code(self):
         response = self.client.get(reverse('blog:post_index'))
@@ -223,12 +218,3 @@ class ArticleViewTest(TestCase):
             {'body': 'Foo Bar'})
         self.assertRedirects(response,
             '/articoli/2020/05/10/article-3/#upload-anchor')
-
-    def test_user_upload_create_view_event_success_url(self):
-        self.client.post('/accounts/login/', {'username':'logged_in',
-            'password':'P4s5W0r6'})
-        event = Event.objects.get(slug='birthday')
-        response = self.client.post(f'/articoli/contributi/?event_id={event.id}',
-            {'body': 'Foo Bar'})
-        self.assertRedirects(response,
-            '/calendario/2020/05/10/birthday/#upload-anchor')
