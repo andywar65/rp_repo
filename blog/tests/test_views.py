@@ -18,7 +18,7 @@ class ArticleViewTest(TestCase):
         profile.is_trusted = True
         profile.save()
         User.objects.create_user(username='untrusted', password='P4s5W0r6')
-        article = Article.objects.create(id=34, title='Article 3',
+        article = Article.objects.create(title='Article 3',
             date = '2020-05-10 15:53:00+02', author = usr
             )
         article.tags.add('foo')
@@ -53,8 +53,6 @@ class ArticleViewTest(TestCase):
     def test_article_archive_index_view_context_object_tagged(self):
         all_posts = Article.objects.filter( tags__name='foo' )
         response = self.client.get('/articoli/?tag=foo')
-        #workaround found in
-        #https://stackoverflow.com/questions/17685023/how-do-i-test-django-querysets-are-equal
         self.assertQuerysetEqual(response.context['posts'], all_posts,
             transform=lambda x: x)
 
@@ -194,9 +192,10 @@ class ArticleViewTest(TestCase):
             transform=lambda x: x )
 
     def test_user_upload_create_view_redirect_not_logged(self):
-        response = self.client.get('/articoli/contributi/?post_id=34')
+        post = Article.objects.get(slug='article-3')
+        response = self.client.get(f'/articoli/contributi/?post_id={post.id}')
         self.assertRedirects(response,
-            '/accounts/login/?next=/articoli/contributi/%3Fpost_id%3D34')
+            f'/accounts/login/?next=/articoli/contributi/%3Fpost_id%3D{post.id}')
 
     def test_user_upload_create_view_status_code(self):
         self.client.post('/accounts/login/', {'username':'logged_in',
@@ -217,9 +216,10 @@ class ArticleViewTest(TestCase):
         self.assertTemplateUsed(response, 'blog/userupload_form.html')
 
     def test_user_upload_create_view_success_url(self):
+        post = Article.objects.get(slug='article-3')
         self.client.post('/accounts/login/', {'username':'logged_in',
             'password':'P4s5W0r6'})
-        response = self.client.post('/articoli/contributi/?post_id=34',
+        response = self.client.post(f'/articoli/contributi/?post_id={post.id}',
             {'body': 'Foo Bar'})
         self.assertRedirects(response,
             '/articoli/2020/05/10/article-3/#upload-anchor')
