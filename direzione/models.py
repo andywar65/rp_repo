@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from streamfield.fields import StreamField
 from streamblocks.models import (IndexedParagraph, CaptionedImage,
     DownloadableFile, LinkableList, BoxedText)
-from users.models import Profile
+from users.models import User
 from cronache.models import Location
 from .choices import *
 from project.utils import generate_unique_slug
@@ -57,12 +57,12 @@ class Society(models.Model):
         max_length = 11)
     iban = models.CharField('Codice IBAN', blank= True, null=True,
         max_length = 27)
-    president = models.ForeignKey(Profile, on_delete = models.SET_NULL,
+    president = models.ForeignKey(User, on_delete = models.SET_NULL,
         null=True, verbose_name = 'Presidente',
         related_name = 'society_president')
-    executive = models.ManyToManyField(Profile,
+    executive = models.ManyToManyField(User,
         verbose_name = 'Dirigenti', related_name = 'society_executive')
-    trainers = models.ManyToManyField(Profile,
+    trainers = models.ManyToManyField(User,
         verbose_name = 'Istruttori', related_name = 'society_trainers')
 
     def __str__(self):
