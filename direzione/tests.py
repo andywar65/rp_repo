@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.urls import reverse
 
 from cronache.models import Location
 from .models import Convention, Society
@@ -28,3 +29,35 @@ class ConventionModelTest(TestCase):
     def test_society_model_str_method(self):
         society = Society.objects.get(title='Rif Pod')
         self.assertEqual(society.__str__(), 'Rif Pod')
+
+    def test_convention_list_view_status_code(self):
+        response = self.client.get(reverse('conventions:index'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_convention_list_view_template(self):
+        response = self.client.get(reverse('conventions:index'))
+        self.assertTemplateUsed(response, 'direzione/convention_list.html')
+
+    def test_convention_list_context_object(self):
+        conventions = Convention.objects.filter(slug='doctor-who')
+        response = self.client.get(reverse('conventions:index'))
+        #workaround found in
+        #https://stackoverflow.com/questions/17685023/how-do-i-test-django-querysets-are-equal
+        self.assertQuerysetEqual(response.context['all_conventions'],
+            conventions, transform=lambda x: x)
+
+    def test_convention_detail_view_status_code(self):
+        response = self.client.get(reverse('conventions:detail',
+            kwargs={'slug': 'doctor-who'}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_convention_detail_view_template(self):
+        response = self.client.get(reverse('conventions:detail',
+            kwargs={'slug': 'doctor-who'}))
+        self.assertTemplateUsed(response, 'direzione/convention_detail.html')
+
+    def test_convention_detail_context_object(self):
+        convention = Convention.objects.get(slug='doctor-who')
+        response = self.client.get(reverse('conventions:detail',
+            kwargs={'slug': 'doctor-who'}))
+        self.assertEqual(response.context['conv'], convention)
