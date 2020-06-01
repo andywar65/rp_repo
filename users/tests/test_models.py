@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.utils.html import format_html
 
 from users.models import User, CourseSchedule, Profile, UserMessage
 
@@ -17,12 +18,13 @@ class UserModelTest(TestCase):
         profile = Profile.objects.get(pk=user.id)
         profile.avatar = 'uploads/users/avatar.jpg'
         profile.parent = parent
+        profile.gender = 'M'
         profile.date_of_birth = '2010-5-10'
         profile.save()
         User.objects.create_user(username='unborn', password='P4s5W0r6',)
         CourseSchedule.objects.create(full='Foo Bar', abbrev='FB')
-        UserMessage.objects.create(id=17, user=user, subject='Foo', body='Bar')
-        UserMessage.objects.create(id=18, nickname='Nick Name',
+        UserMessage.objects.create(user=user, subject='Foo', body='Bar')
+        UserMessage.objects.create(nickname='Nick Name',
             email='me@example.com', subject='Foo', body='Bar')
 
     def test_user_get_full_name(self):
@@ -75,51 +77,58 @@ class UserModelTest(TestCase):
 
     def test_profile_get_full_name(self):
         user = User.objects.get(username='andy.war65')
-        profile = Profile.objects.get(pk=user.id)
-        self.assertEquals(profile.get_full_name(), 'Andrea Guerra')
+        self.assertEquals(user.profile.get_full_name(), 'Andrea Guerra')
 
     def test_profile_get_full_username(self):
         user = User.objects.get(username='rawydna56')
-        profile = Profile.objects.get(pk=user.id)
-        self.assertEquals(profile.get_full_name(), 'rawydna56')
+        self.assertEquals(user.profile.get_full_name(), 'rawydna56')
 
     def test_profile_str_full_name(self):
         user = User.objects.get(username='andy.war65')
-        profile = Profile.objects.get(pk=user.id)
-        self.assertEquals(profile.__str__(), 'Andrea Guerra')
+        self.assertEquals(user.profile.__str__(), 'Andrea Guerra')
 
     def test_profile_str_username(self):
         user = User.objects.get(username='rawydna56')
-        profile = Profile.objects.get(pk=user.id)
-        self.assertEquals(profile.__str__(), 'rawydna56')
+        self.assertEquals(user.profile.__str__(), 'rawydna56')
 
     def test_profile_get_thumb(self):
         user = User.objects.get(username='andy.war65')
-        profile = Profile.objects.get(pk=user.id)
         # here extracting path from FileObject for convenience
-        self.assertEquals(profile.get_thumb().path, 'uploads/users/avatar.jpg')
+        self.assertEquals(user.profile.get_thumb().path, 'uploads/users/avatar.jpg')
 
     def test_profile_get_no_thumb(self):
         user = User.objects.get(username='rawydna56')
-        profile = Profile.objects.get(pk=user.id)
-        self.assertEquals(profile.get_thumb(), None)
+        self.assertEquals(user.profile.get_thumb(), None)
+
+    def test_profile_model_is_complete_no(self):
+        user = User.objects.get(username='unborn')
+        self.assertEquals(user.profile.is_complete(),
+            format_html('<img src="/static/admin/img/icon-no.svg" alt="False">'))
+
+    def test_profile_model_is_complete_parent_gender(self):
+        user = User.objects.get(username='andy.war65')
+        self.assertEquals(user.profile.is_complete(),
+            format_html('<img src="/static/admin/img/icon-yes.svg" alt="True">'))
 
     def test_user_message_get_full_name(self):
-        message = UserMessage.objects.get(id = 17)
+        user = User.objects.get(username='andy.war65')
+        message = UserMessage.objects.get(user = user)
         self.assertEquals(message.get_full_name(), 'Andrea Guerra')
 
     def test_user_message_get_nickname(self):
-        message = UserMessage.objects.get(id = 18)
+        message = UserMessage.objects.get(nickname = 'Nick Name')
         self.assertEquals(message.get_full_name(), 'Nick Name')
 
     def test_user_message_get_user_email(self):
-        message = UserMessage.objects.get(id = 17)
+        user = User.objects.get(username='andy.war65')
+        message = UserMessage.objects.get(user = user)
         self.assertEquals(message.get_email(), 'andy@war.com')
 
     def test_user_message_get_nickname_email(self):
-        message = UserMessage.objects.get(id = 18)
+        message = UserMessage.objects.get(nickname = 'Nick Name')
         self.assertEquals(message.get_email(), 'me@example.com')
 
     def test_user_message_str_method(self):
-        message = UserMessage.objects.get(id = 17)
-        self.assertEquals(message.__str__(), 'Messaggio - 17')
+        user = User.objects.get(username='andy.war65')
+        message = UserMessage.objects.get(user = user)
+        self.assertEquals(message.__str__(), f'Messaggio - {message.id}')
