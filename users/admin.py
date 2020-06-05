@@ -80,12 +80,12 @@ class ProfileAdmin(admin.ModelAdmin):
                     member.mc_state = '1-VF'
                     member.save()
             elif member.mc_state == '2-RE':
-                if member.mc_expiry<date.today() + timedelta(days=30):
-                    member.mc_state = '6-IS'
-                    member.save()
-                elif member.mc_expiry<date.today():
+                if member.mc_expiry<date.today():
                     member.mc_state = '3-SV'
                     member.save()
+                elif member.mc_expiry<date.today() + timedelta(days=30):
+                    member.mc_state = '6-IS'
+                    member.save()    
             elif member.mc_state.startswith('6'):
                 if member.mc_expiry<date.today():
                     member.mc_state = '3-SV'
