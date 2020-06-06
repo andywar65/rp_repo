@@ -223,3 +223,29 @@ class UserAdminTest(TestCase):
         self.assertEqual(user.profile.settled, 'NO')
 
     #covering action reset all
+
+    def test_profile_admin_reset_all_action_status_code(self):
+        self.client.post('/admin/login/', {'username':'profilechanger',
+            'password':'P4s5W0r6'})
+        users = User.objects.all().values_list('id', flat=True)
+        response = self.client.post('/admin/users/profile/',
+            {'action': 'reset_all', '_selected_action': users}, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_profile_admin_reset_all_action_settled(self):
+        self.client.post('/admin/login/', {'username':'profilechanger',
+            'password':'P4s5W0r6'})
+        users = User.objects.all().values_list('id', flat=True)
+        response = self.client.post('/admin/users/profile/',
+            {'action': 'reset_all', '_selected_action': users})
+        user = User.objects.get(username='anotherexpired')
+        self.assertEqual(user.profile.settled, '')
+
+    def test_profile_admin_reset_all_action_member_payments(self):
+        self.client.post('/admin/login/', {'username':'profilechanger',
+            'password':'P4s5W0r6'})
+        users = User.objects.all().values_list('id', flat=True)
+        response = self.client.post('/admin/users/profile/',
+            {'action': 'reset_all', '_selected_action': users})
+        payments = MemberPayment.objects.all()
+        self.assertFalse(payments)
