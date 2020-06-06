@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
-from users.models import User, Profile#, CourseSchedule, UserMessage
+from users.models import User, Profile, MemberPayment
 
 class UserAdminTest(TestCase):
     @classmethod
@@ -16,6 +16,7 @@ class UserAdminTest(TestCase):
         profile.sector = '1-YC'
         profile.mc_state = '0-NF'
         profile.med_cert = 'documents/foobar.pdf'
+        profile.settled = 'YES'
         profile.save()
         user2 = User.objects.create_user(username='profilechanger',
             password='P4s5W0r6', is_staff = True )
@@ -59,14 +60,18 @@ class UserAdminTest(TestCase):
         profile.sector = '1-YC'
         profile.mc_state = '2-RE'
         profile.mc_expiry = date.today() - timedelta(days=15)
+        profile.total_amount = 100
         profile.save()
+        MemberPayment.objects.create(member_id=user6.id, amount=100)
         user7 = User.objects.create_user(username='anotherexpired',
             password='P4s5W0r6' )
         profile = user7.profile
         profile.sector = '1-YC'
         profile.mc_state = '6-IS'
         profile.mc_expiry = date.today() - timedelta(days=15)
+        profile.total_amount = 100
         profile.save()
+        MemberPayment.objects.create(member_id=user7.id, amount=50)
 
     #covering get queryset
 
@@ -125,7 +130,7 @@ class UserAdminTest(TestCase):
         response = self.client.get(f'/admin/users/profile/{user.id}/change/')
         self.assertEqual(response.status_code, 200)
 
-    #covering action mc state
+    #covering action control mc
 
     def test_profile_admin_control_mc_action_status_code(self):
         self.client.post('/admin/login/', {'username':'profilechanger',
@@ -179,3 +184,42 @@ class UserAdminTest(TestCase):
             {'action': 'control_mc', '_selected_action': users})
         user = User.objects.get(username='anotherexpired')
         self.assertEqual(user.profile.mc_state, '3-SV')
+
+    #covering action control pay
+
+    def test_profile_admin_control_pay_action_status_code(self):
+        self.client.post('/admin/login/', {'username':'profilechanger',
+            'password':'P4s5W0r6'})
+        users = User.objects.all().values_list('id', flat=True)
+        response = self.client.post('/admin/users/profile/',
+            {'action': 'control_pay', '_selected_action': users}, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_profile_admin_control_pay_action_verify(self):
+        self.client.post('/admin/login/', {'username':'profilechanger',
+            'password':'P4s5W0r6'})
+        users = User.objects.all().values_list('id', flat=True)
+        response = self.client.post('/admin/users/profile/',
+            {'action': 'control_pay', '_selected_action': users})
+        user = User.objects.get(username='staffmember')
+        self.assertEqual(user.profile.settled, 'VI')
+
+    def test_profile_admin_control_pay_action_yes(self):
+        self.client.post('/admin/login/', {'username':'profilechanger',
+            'password':'P4s5W0r6'})
+        users = User.objects.all().values_list('id', flat=True)
+        response = self.client.post('/admin/users/profile/',
+            {'action': 'control_pay', '_selected_action': users})
+        user = User.objects.get(username='certexpired')
+        self.assertEqual(user.profile.settled, 'YES')
+
+    def test_profile_admin_control_pay_action_no(self):
+        self.client.post('/admin/login/', {'username':'profilechanger',
+            'password':'P4s5W0r6'})
+        users = User.objects.all().values_list('id', flat=True)
+        response = self.client.post('/admin/users/profile/',
+            {'action': 'control_pay', '_selected_action': users})
+        user = User.objects.get(username='anotherexpired')
+        self.assertEqual(user.profile.settled, 'NO')
+
+    #covering action reset all
