@@ -7,21 +7,46 @@ class UserModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
-        parent = User.objects.create_user(username='rawydna56', password='P4s5W0r6',)
-        profile = Profile.objects.get(pk=parent.id)
+        parent = User.objects.create_user(username='rawydna56',
+            password='P4s5W0r6')
+        profile = parent.profile
+        profile.sector = '3-FI'
         profile.date_of_birth = '1965-5-10'
+        profile.mc_state = '02NI'
         profile.save()
         user = User.objects.create_user(username='andy.war65', password='P4s5W0r6',
             first_name='Andrea', last_name='Guerra', email='andy@war.com')
         #next save is just for coverage purposes
         user.save()
-        profile = Profile.objects.get(pk=user.id)
+        profile = user.profile
         profile.avatar = 'uploads/users/avatar.jpg'
         profile.parent = parent
         profile.gender = 'M'
         profile.date_of_birth = '2010-5-10'
+        profile.mc_state = '62II'
         profile.save()
-        User.objects.create_user(username='unborn', password='P4s5W0r6',)
+        unborn = User.objects.create_user(username='unborn',
+            password='P4s5W0r6')
+        profile = unborn.profile
+        profile.mc_state = '4-SI'
+        profile.save()
+        sector = User.objects.create_user(username='sector',
+            password='P4s5W0r6', first_name='Sector')
+        profile = sector.profile
+        profile.sector = '0-NO'
+        profile.save()
+        fiscal = User.objects.create_user(username='fiscal',
+            password='P4s5W0r6', first_name='Fiscal')
+        profile = fiscal.profile
+        profile.sector = '3-FI'
+        profile.fiscal_code = 'GRRNDR65D13F839E'
+        profile.save()
+        phoney = User.objects.create_user(username='phoney',
+            password='P4s5W0r6', first_name='Phoo')
+        profile = phoney.profile
+        profile.gender = 'M'
+        profile.phone = '123456789'
+        profile.save()
         CourseSchedule.objects.create(full='Foo Bar', abbrev='FB')
         UserMessage.objects.create(user=user, subject='Foo', body='Bar')
         UserMessage.objects.create(nickname='Nick Name',
@@ -100,15 +125,30 @@ class UserModelTest(TestCase):
         user = User.objects.get(username='rawydna56')
         self.assertEquals(user.profile.get_thumb(), None)
 
-    def test_profile_model_is_complete_no(self):
-        user = User.objects.get(username='unborn')
-        self.assertEquals(user.profile.is_complete(),
-            format_html('<img src="/static/admin/img/icon-no.svg" alt="False">'))
-
     def test_profile_model_is_complete_parent_gender(self):
         user = User.objects.get(username='andy.war65')
         self.assertEquals(user.profile.is_complete(),
             format_html('<img src="/static/admin/img/icon-yes.svg" alt="True">'))
+
+    def test_profile_model_is_complete_sector_0(self):
+        user = User.objects.get(username='sector')
+        self.assertEquals(user.profile.is_complete(),
+            format_html('<img src="/static/admin/img/icon-yes.svg" alt="True">'))
+
+    def test_profile_model_is_complete_fiscal_code(self):
+        user = User.objects.get(username='fiscal')
+        self.assertEquals(user.profile.is_complete(),
+            format_html('<img src="/static/admin/img/icon-yes.svg" alt="True">'))
+
+    def test_profile_model_is_complete_phone(self):
+        user = User.objects.get(username='phoney')
+        self.assertEquals(user.profile.is_complete(),
+            format_html('<img src="/static/admin/img/icon-yes.svg" alt="True">'))
+
+    def test_profile_model_is_complete_no(self):
+        user = User.objects.get(username='unborn')
+        self.assertEquals(user.profile.is_complete(),
+            format_html('<img src="/static/admin/img/icon-no.svg" alt="False">'))
 
     def test_user_message_get_full_name(self):
         user = User.objects.get(username='andy.war65')
