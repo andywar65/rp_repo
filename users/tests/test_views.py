@@ -58,6 +58,16 @@ class UserViewTest(TestCase):
             'password':'P4s5W0r6'})
         usr = User.objects.get(username='existing')
         response = self.client.post(f'/contacts/?recipient={usr.id}', {
+            'subject': 'Foo', 'body': 'Bar',
+            'attachment': 'path/to/attachment.jpg'})
+        self.assertEqual(response.status_code, 302 )
+
+    def test_contact_view_message_logged_post_status_code_bad_recipient(self):
+        #this test is just for coverage
+        self.client.post('/accounts/login/', {'username':'existing',
+            'password':'P4s5W0r6'})
+        usr = User.objects.get(username='existing')
+        response = self.client.post(f'/contacts/?recipient=404', {
             'subject': 'Foo', 'body': 'Bar'})
         self.assertEqual(response.status_code, 302 )
 
