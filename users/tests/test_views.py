@@ -41,6 +41,18 @@ class UserViewTest(TestCase):
         response = self.client.get(reverse('contacts'))
         self.assertTemplateUsed(response, 'users/message.html')
 
+    def test_contact_view_message_not_logged_post_status_code(self):
+        response = self.client.post(reverse('contacts'), {'subject': 'Foo',
+            'body': 'Bar', 'nickname': 'Nick', 'email': 'me@example.com',
+            'privacy': True, "g-recaptcha-response": "PASSED"})
+        self.assertEqual(response.status_code, 302 )
+
+    def test_contact_view_message_not_logged_post_redirects(self):
+        response = self.client.post(reverse('contacts'), {'subject': 'Foo',
+            'body': 'Bar', 'nickname': 'Nick', 'email': 'me@example.com',
+            'privacy': True, "g-recaptcha-response": "PASSED"}, follow=True)
+        self.assertRedirects(response, '/contacts/?submitted=True' )
+
     def test_contact_view_template_logged(self):
         self.client.post('/accounts/login/', {'username':'existing',
             'password':'P4s5W0r6'})
