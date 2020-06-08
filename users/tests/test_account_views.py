@@ -26,11 +26,17 @@ class AccountViewTest(TestCase):
         profile.is_trusted = True
         profile.save()
         trustyparent = User.objects.create_user(username='trustyparent',
-            password='P4s5W0r6', first_name='Trusty')
+            password='P4s5W0r6', first_name='Trusty', email='trusty@example.com')
         profile = trustyparent.profile
         profile.sector = '3-FI'
         profile.is_trusted = True
         profile.fiscal_code = 'GRRNDR65D13F839E'
+        profile.save()
+        trustychild = User.objects.create_user(username='trustychild',
+            password='P4s5W0r6', first_name='Child', last_name='Trusty')
+        profile = trustychild.profile
+        profile.parent = trustyparent
+        profile.sector = '1-YC'
         profile.save()
         user1 = User.objects.create_user(username='user_1',
             password='P4s5W0r6')
@@ -42,6 +48,8 @@ class AccountViewTest(TestCase):
         profile = user2.profile
         profile.sector = '2-NC'
         profile.save()
+
+    #testing add child view
 
     def test_profile_add_child_view_404_sector_0(self):
         self.client.post('/accounts/login/', {'username':'user_0',
@@ -87,6 +95,8 @@ class AccountViewTest(TestCase):
             {'first_name': 'Child', 'last_name': 'Trusty'})
         self.assertRedirects(response, '/accounts/profile/?child_created=True' )
 
+    #testing template account view
+
     def test_template_account_view_status_code_sector_1(self):
         self.client.post('/accounts/login/', {'username':'user_1',
             'password':'P4s5W0r6'})
@@ -110,6 +120,8 @@ class AccountViewTest(TestCase):
             'password':'P4s5W0r6'})
         response = self.client.get(reverse('profile'))
         self.assertTemplateUsed(response, 'users/account_2.html' )
+
+    #testing profile change view
 
     def test_profile_change_view_not_logged(self):
         user = User.objects.get(username='user_2')
@@ -166,3 +178,70 @@ class AccountViewTest(TestCase):
             'last_name': 'Two', 'email': 'user_2@example.com'})
         self.assertRedirects(response,
             '/accounts/profile/?submitted=User%20Two' )
+
+    #testing profile change view child
+
+    def test_profile_change_view_child_not_logged(self):
+        parent = User.objects.get(username='trustyparent')
+        child = User.objects.get(username='trustychild')
+        response = self.client.get(f'/accounts/profile/{child.id}/change/?parent={parent.id}')
+        self.assertEqual(response.status_code, 302 )
+
+    def test_profile_change_view_child_not_logged_redirects(self):
+        parent = User.objects.get(username='trustyparent')
+        child = User.objects.get(username='trustychild')
+        response = self.client.get(f'/accounts/profile/{child.id}/change/?parent={parent.id}')
+        self.assertRedirects(response,
+            f'/accounts/login/?next=/accounts/profile/{child.id}/change/?parent={parent.id}' )
+
+    def test_profile_change_view_child_404_wrong_parent(self):
+        parent = User.objects.get(username='user_2')
+        child = User.objects.get(username='trustychild')
+        self.client.post('/accounts/login/', {'username':'user_2',
+            'password':'P4s5W0r6'})
+        response = self.client.get(f'/accounts/profile/{child.id}/change/?parent={parent.id}')
+        self.assertEqual(response.status_code, 404 )
+
+    def test_profile_change_view_child_404_wrong_child(self):
+        parent = User.objects.get(username='trustyparent')
+        self.client.post('/accounts/login/', {'username':'trustyparent',
+            'password':'P4s5W0r6'})
+        response = self.client.get(f'/accounts/profile/404/change/?parent={parent.id}')
+        self.assertEqual(response.status_code, 404 )
+
+    def test_profile_change_view_child_status_code(self):
+        parent = User.objects.get(username='trustyparent')
+        child = User.objects.get(username='trustychild')
+        self.client.post('/accounts/login/', {'username':'trustyparent',
+            'password':'P4s5W0r6'})
+        response = self.client.get(f'/accounts/profile/{child.id}/change/?parent={parent.id}')
+        self.assertEqual(response.status_code, 200 )
+
+    def test_profile_change_view_child_template(self):
+        parent = User.objects.get(username='trustyparent')
+        child = User.objects.get(username='trustychild')
+        self.client.post('/accounts/login/', {'username':'trustyparent',
+            'password':'P4s5W0r6'})
+        response = self.client.get(f'/accounts/profile/{child.id}/change/?parent={parent.id}')
+        self.assertTemplateUsed(response, 'users/profile_change_child.html' )
+
+    def test_profile_change_view_child_post_status_code(self):
+        parent = User.objects.get(username='trustyparent')
+        child = User.objects.get(username='trustychild')
+        self.client.post('/accounts/login/', {'username':'trustyparent',
+            'password':'P4s5W0r6'})
+        response = self.client.post(f'/accounts/profile/{child.id}/change/?parent={parent.id}',
+            {'first_name': child.first_name, 'last_name': child.last_name,
+            'email': parent.email})
+        self.assertEqual(response.status_code, 302 )
+
+    def test_profile_change_view_child_post_redirects(self):
+        parent = User.objects.get(username='trustyparent')
+        child = User.objects.get(username='trustychild')
+        self.client.post('/accounts/login/', {'username':'trustyparent',
+            'password':'P4s5W0r6'})
+        response = self.client.post(f'/accounts/profile/{child.id}/change/?parent={parent.id}',
+            {'first_name': child.first_name, 'last_name': child.last_name,
+            'email': parent.email})
+        self.assertRedirects(response,
+            f'/accounts/profile/?submitted={child.first_name}%20{child.last_name}' )
