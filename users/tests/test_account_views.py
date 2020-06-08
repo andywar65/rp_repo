@@ -3,7 +3,7 @@ from django.urls import reverse
 
 from users.models import User
 
-class UserViewTest(TestCase):
+class AccountViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
