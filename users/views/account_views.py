@@ -6,6 +6,8 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView, UpdateView, CreateView
+from django.utils.html import format_html
+
 from project.utils import generate_unique_username
 from users.forms import (RegistrationForm, ProfileChangeForm,
     ProfileDeleteForm, ProfileChangeRegistryForm, ProfileChangeAddressForm,
@@ -54,6 +56,8 @@ class RegistrationFormView(FormView):
         email.send()
         return super(RegistrationFormView, self).form_valid(form)
 
+no = format_html('<img src="/static/admin/img/icon-no.svg" alt="False">')
+
 class ProfileAddChildView(LoginRequiredMixin, FormView):
     form_class = ProfileAddChildForm
     template_name = 'users/profile_add_child.html'
@@ -63,6 +67,8 @@ class ProfileAddChildView(LoginRequiredMixin, FormView):
         usr = self.request.user
         if usr.profile.sector == '0-NO' or not usr.profile.is_trusted:
             raise Http404("User is not authorized to add children")
+        elif usr.profile.is_complete() == no:
+            raise Http404("User must complete personal data")
         return super(ProfileAddChildView, self).get(request, *args, **kwargs)
 
     def form_valid(self, form):
