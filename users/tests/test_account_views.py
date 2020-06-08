@@ -15,7 +15,7 @@ class AccountViewTest(TestCase):
         profile.save()
         untrusty = User.objects.create_user(username='untrusty',
             password='P4s5W0r6', email='me@existing.com')
-        profile = user0.profile
+        profile = untrusty.profile
         profile.sector = '3-FI'
         profile.is_trusted = False
         profile.save()
