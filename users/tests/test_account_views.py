@@ -492,3 +492,68 @@ class AccountViewTest(TestCase):
             {'no_course_membership': 'FID'})
         self.assertRedirects(response,
             f'/accounts/profile/?submitted={user.username}' )
+
+    #testing profile delete child view
+
+    def test_profile_delete_child_view_not_logged(self):
+        parent = User.objects.get(username='trustyparent')
+        child = User.objects.get(username='trustychild')
+        response = self.client.get(f'/accounts/profile/{child.id}/delete_child/')
+        self.assertEqual(response.status_code, 302 )
+
+    def test_profile_delete_child_view_not_logged_redirects(self):
+        parent = User.objects.get(username='trustyparent')
+        child = User.objects.get(username='trustychild')
+        response = self.client.get(f'/accounts/profile/{child.id}/delete_child/')
+        self.assertRedirects(response,
+            f'/accounts/login/?next=/accounts/profile/{child.id}/delete_child/' )
+
+    def test_profile_delete_child_view_404_wrong_parent(self):
+        parent = User.objects.get(username='user_2')
+        child = User.objects.get(username='trustychild')
+        self.client.post('/accounts/login/', {'username':'user_2',
+            'password':'P4s5W0r6'})
+        response = self.client.get(f'/accounts/profile/{child.id}/delete_child/')
+        self.assertEqual(response.status_code, 404 )
+
+    def test_profile_delete_child_view_404_wrong_child(self):
+        parent = User.objects.get(username='trustyparent')
+        self.client.post('/accounts/login/', {'username':'trustyparent',
+            'password':'P4s5W0r6'})
+        response = self.client.get(f'/accounts/profile/404/delete_child/')
+        self.assertEqual(response.status_code, 404 )
+
+    def test_profile_delete_child_view_status_code(self):
+        parent = User.objects.get(username='trustyparent')
+        child = User.objects.get(username='trustychild')
+        self.client.post('/accounts/login/', {'username':'trustyparent',
+            'password':'P4s5W0r6'})
+        response = self.client.get(f'/accounts/profile/{child.id}/delete_child/')
+        self.assertEqual(response.status_code, 200 )
+
+    def test_profile_delete_child_view_template(self):
+        parent = User.objects.get(username='trustyparent')
+        child = User.objects.get(username='trustychild')
+        self.client.post('/accounts/login/', {'username':'trustyparent',
+            'password':'P4s5W0r6'})
+        response = self.client.get(f'/accounts/profile/{child.id}/delete_child/')
+        self.assertTemplateUsed(response, 'users/profile_delete_child.html' )
+
+    def test_profile_delete_child_view_post_status_code(self):
+        parent = User.objects.get(username='trustyparent')
+        child = User.objects.get(username='trustychild')
+        self.client.post('/accounts/login/', {'username':'trustyparent',
+            'password':'P4s5W0r6'})
+        response = self.client.post(f'/accounts/profile/{child.id}/delete_child/',
+            {'delete': True})
+        self.assertEqual(response.status_code, 302 )
+
+    def test_profile_delete_child_view_post_redirects(self):
+        parent = User.objects.get(username='trustyparent')
+        child = User.objects.get(username='trustychild')
+        self.client.post('/accounts/login/', {'username':'trustyparent',
+            'password':'P4s5W0r6'})
+        response = self.client.post(f'/accounts/profile/{child.id}/delete_child/',
+            {'delete': True}, follow=True)
+        self.assertRedirects(response,
+            f'/accounts/profile/deleted_child/' )
