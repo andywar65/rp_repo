@@ -71,6 +71,7 @@ class Race(models.Model):
         athl_list = []
         for athlete in athletes:
             athl_list.append({'user': athlete.user.id,
+                'name': athlete.user.get_full_name(),
                 'gender': athlete.user.profile.gender,
                 'points': athlete.points})
         rcache.cache = athl_list

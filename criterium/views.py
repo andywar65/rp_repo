@@ -85,34 +85,42 @@ class RaceListView(RaceListMixin, ListView):
     ordering = ('date', )
     context_object_name = 'all_races'
 
-    def get_athlete_dict(self, athletes):
-        athl_dict = {}
-        name_dict = {}
-        athl_list = athletes.values_list('user_id', flat = True)
-        athl_list = list(dict.fromkeys(athl_list))
-        for athl in athl_list:
-            athlete = athletes.filter(user_id=athl)
-            point_sum = sum(athlete.values_list('points', flat = True))
-            first = athlete.first()
-            athl_dict[first.user.pk] = point_sum
-            name_dict[first.user.pk] = first.user.get_full_name()
-        # thanks to https://stackoverflow.com/questions/613183/
-        # how-do-i-sort-a-dictionary-by-value
-        athl_dict = {k: v for k, v in sorted(athl_dict.items(),
-            key=lambda item: item[1], reverse = True)}
-        for id, point_sum in athl_dict.items():
-            athl_dict[id] = (name_dict[id], point_sum)
-        return athl_dict
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context = self.get_context_years(context)
-        race_list = context['all_races'].values_list('id', flat = True)
-        athletes = Athlete.objects.filter(race_id__in = race_list)
-        females = athletes.filter(user__profile__gender = 'F')
-        context['females'] = self.get_athlete_dict(females)
-        males = athletes.filter(user__profile__gender = 'M')
-        context['males'] = self.get_athlete_dict(males)
+        athl_list = []
+        name_dict = {}
+        fem_sums = {}
+        male_sums = {}
+        #get all athlete lists from race caches
+        for race in context['all_races']:
+            athl_list.extend(race.racecache.cache)
+        #initialize point sums for each athlete
+        for athl in athl_list:
+            name_dict[athl['user']] = athl['name']
+            if athl['gender'] == 'F':
+                fem_sums[athl['user']] = 0
+            else:
+                male_sums[athl['user']] = 0
+        #adding points to point sums
+        for athl in athl_list:
+            if athl['gender'] == 'F':
+                fem_sums[athl['user']] += athl['points']
+            else:
+                male_sums[athl['user']] += athl['points']
+        # thanks to https://stackoverflow.com/questions/613183/
+        # how-do-i-sort-a-dictionary-by-value
+        fem_sums = {k: v for k, v in sorted(fem_sums.items(),
+            key=lambda item: item[1], reverse = True)}
+        male_sums = {k: v for k, v in sorted(male_sums.items(),
+            key=lambda item: item[1], reverse = True)}
+        #adding names
+        for id, point_sum in fem_sums.items():
+            fem_sums[id] = (name_dict[id], point_sum)
+        for id, point_sum in male_sums.items():
+            male_sums[id] = (name_dict[id], point_sum)
+        context['females'] = fem_sums
+        context['males'] = male_sums
         return context
 
 def get_edition_years():
