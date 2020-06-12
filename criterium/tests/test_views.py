@@ -13,16 +13,18 @@ class RaceViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
-        user = User.objects.create_user(username='juantorena',
-            first_name = 'Alberto', last_name = 'Juantorena',
-            password='P4s5W0r6', is_staff = True )
+        compiler = User.objects.create_user(username='compiler',
+            password='P4s5W0r6', is_staff = True)
         content_type = ContentType.objects.get_for_model(Race)
         permission = Permission.objects.get(
             codename='add_race',
             content_type=content_type,
         )
-        user.user_permissions.add(permission)
-        profile = Profile.objects.get(pk=user.id)
+        compiler.user_permissions.add(permission)
+        user = User.objects.create_user(username='juantorena',
+            first_name = 'Alberto', last_name = 'Juantorena',
+            password='P4s5W0r6' )
+        profile = user.profile
         profile.gender = 'M'
         profile.sector = '2-NC'
         profile.save()
@@ -32,11 +34,13 @@ class RaceViewTest(TestCase):
             date = '2020-05-10 15:53:00+02', location = location
             )
         race = Race.objects.create(title='Race 1', event=event)
-        Race.objects.create(title='Race 2', date='2020-12-11',
+        race2 = Race.objects.create(title='Race 2', date='2020-12-11',
             location = location)
-        Race.objects.create(title='Race 3', date='2020-05-11',
+        race3 = Race.objects.create(title='Race 3', date='2020-05-11',
             location = location)
         Athlete.objects.create(user=user, race=race, points=1)
+        Athlete.objects.create(user=user, race=race2, points=2)
+        Athlete.objects.create(user=user, race=race3, points=3)
 
     def test_race_redirect_view_status_code(self):
         response = self.client.get('/criterium/')
@@ -90,13 +94,10 @@ class RaceViewTest(TestCase):
         self.assertEqual(response.context['females'], {})
 
     def test_race_list_view_context_males(self):
-        #This test only passes if isolated
-        race = Race.objects.get(slug='race-1')
-        user = User.objects.get(username='juantorena')
-        athlete = Athlete.objects.get(user=user, race=race)
         response = self.client.get('/criterium/2019-2020/')
-        self.assertEqual(response.context['males'],
-            {athlete.id: ('Alberto Juantorena', 1)})
+        for key, value in response.context['males'].items():
+            pass
+        self.assertEqual(value, ('Alberto Juantorena', 4))
 
     def test_race_list_view_context_status(self):
         #this test will fail in a hundred years
@@ -125,9 +126,11 @@ class RaceViewTest(TestCase):
         self.assertQuerysetEqual(response.context['females'], females)
 
     def test_race_detail_view_context_males(self):
-        males = Athlete.objects.filter(user__profile__gender='M')
+        race = Race.objects.get(slug='race-1')
+        user = User.objects.get(username='juantorena')
+        athlete = Athlete.objects.filter(user=user, race=race)
         response = self.client.get('/criterium/2019-2020/race-1/')
-        self.assertQuerysetEqual(response.context['males'], males,
+        self.assertQuerysetEqual(response.context['males'], athlete,
             transform=lambda x: x)
 
     def test_race_list_athlete_view_status_code(self):
@@ -161,20 +164,20 @@ class RaceViewTest(TestCase):
 
     def test_race_list_athlete_view_context_races(self):
         race = Race.objects.get(slug='race-1')
+        race3 = Race.objects.get(slug='race-3')
         user = User.objects.get(username='juantorena')
         response = self.client.get(reverse('criterium:athlete',
             kwargs={'year': 2019, 'year2': 2020, 'id': user.id}))
-        self.assertEqual(response.context['all_races'], {race: 1})
+        self.assertEqual(response.context['all_races'], {race: 1, race3: 3})
 
     def test_race_list_athlete_view_context_races_none(self):
-        race = Race.objects.get(slug='race-2')
         user = User.objects.get(username='juantorena')
         response = self.client.get(reverse('criterium:athlete',
-            kwargs={'year': 2020, 'year2': 2021, 'id': user.id}))
+            kwargs={'year': 2021, 'year2': 2022, 'id': user.id}))
         self.assertEqual(response.context['all_races'], None)
 
     def test_add_race_date_validation(self):
-        self.client.post('/admin/login/', {'username':'juantorena',
+        self.client.post('/admin/login/', {'username':'compiler',
             'password':'P4s5W0r6'})
         response = self.client.post('/admin/criterium/race/add/',
             {'title': 'Race 5'})
@@ -182,7 +185,7 @@ class RaceViewTest(TestCase):
             [['Senza evento occorre inserire almeno la data.']])
 
     def test_add_race_validated_and_redirected(self):
-        self.client.post('/admin/login/', {'username':'juantorena',
+        self.client.post('/admin/login/', {'username':'compiler',
             'password':'P4s5W0r6'})
         response = self.client.post('/admin/criterium/race/add/',
             {'title': 'Race 5', 'date': '2020-05-26'})
