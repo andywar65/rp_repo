@@ -41,6 +41,10 @@ class RaceViewTest(TestCase):
         Athlete.objects.create(user=user, race=race, points=1)
         Athlete.objects.create(user=user, race=race2, points=2)
         Athlete.objects.create(user=user, race=race3, points=3)
+        #update the RaceCache items
+        race.save()
+        race2.save()
+        race3.save()
 
     def test_race_redirect_view_status_code(self):
         response = self.client.get('/criterium/')

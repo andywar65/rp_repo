@@ -1,5 +1,7 @@
 from datetime import datetime
+
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 
 from users.models import User
 from cronache.models import Event, Location
@@ -61,6 +63,18 @@ class Race(models.Model):
             else:
                 self.date = temp.date()
         super(Race, self).save(*args, **kwargs)
+        try:
+            rcache = RaceCache.objects.get(race_id = self.id)
+        except:
+            rcache = RaceCache.objects.create(race = self)
+        athletes = Athlete.objects.filter(race_id=self.id)
+        athl_list = []
+        for athlete in athletes:
+            athl_list.append({'user': athlete.user.id,
+                'gender': athlete.user.profile.gender,
+                'points': athlete.points})
+        rcache.cache = athl_list
+        rcache.save()
 
     def __str__(self):
         return self.title
@@ -69,6 +83,11 @@ class Race(models.Model):
         verbose_name = 'Gara'
         verbose_name_plural = 'Gare'
         ordering = ('-date', )
+
+class RaceCache(models.Model):
+    race= models.OneToOneField(Race, on_delete=models.CASCADE,
+        primary_key=True)
+    cache = JSONField(null=True)
 
 class AthleteManager(models.Manager):
     def get_queryset(self):
