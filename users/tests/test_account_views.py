@@ -447,3 +447,48 @@ class AccountViewTest(TestCase):
             'phone': '123456789'})
         self.assertRedirects(response,
             f'/accounts/profile/?submitted={user.username}' )
+
+    #testing profile change no_course view
+
+    def test_profile_change_no_course_not_logged(self):
+        user = User.objects.get(username='user_2')
+        response = self.client.get(f'/accounts/profile/{user.id}/change/no_course/')
+        self.assertEqual(response.status_code, 302 )
+
+    def test_profile_change_no_course_404_wrong_id(self):
+        user = User.objects.get(username='user_2')
+        self.client.post('/accounts/login/', {'username':'user_2',
+            'password':'P4s5W0r6'})
+        response = self.client.get('/accounts/profile/404/change/no_course/')
+        self.assertEqual(response.status_code, 404 )
+
+    def test_profile_change_no_course_status_code(self):
+        user = User.objects.get(username='user_2')
+        self.client.post('/accounts/login/', {'username':'user_2',
+            'password':'P4s5W0r6'})
+        response = self.client.get(f'/accounts/profile/{user.id}/change/no_course/')
+        self.assertEqual(response.status_code, 200 )
+
+    def test_profile_change_no_course_template(self):
+        user = User.objects.get(username='user_2')
+        self.client.post('/accounts/login/', {'username':'user_2',
+            'password':'P4s5W0r6'})
+        response = self.client.get(f'/accounts/profile/{user.id}/change/no_course/')
+        self.assertTemplateUsed(response, 'users/profile_change_no_course.html' )
+
+    def test_profile_change_no_course_post_status_code(self):
+        user = User.objects.get(username='user_2')
+        self.client.post('/accounts/login/', {'username':'user_2',
+            'password':'P4s5W0r6'})
+        response = self.client.post(f'/accounts/profile/{user.id}/change/no_course/',
+            {'no_course_membership': 'FID'})
+        self.assertEqual(response.status_code, 302 )
+
+    def test_profile_change_no_course_post_redirects(self):
+        user = User.objects.get(username='user_2')
+        self.client.post('/accounts/login/', {'username':'user_2',
+            'password':'P4s5W0r6'})
+        response = self.client.post(f'/accounts/profile/{user.id}/change/no_course/',
+            {'no_course_membership': 'FID'})
+        self.assertRedirects(response,
+            f'/accounts/profile/?submitted={user.username}' )
