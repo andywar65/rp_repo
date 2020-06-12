@@ -400,3 +400,50 @@ class AccountViewTest(TestCase):
             'course_membership': 'INTU'})
         self.assertRedirects(response,
             f'/accounts/profile/?submitted={child.first_name}%20{child.last_name}' )
+
+    #testing profile change address view
+
+    def test_profile_change_address_not_logged(self):
+        user = User.objects.get(username='user_2')
+        response = self.client.get(f'/accounts/profile/{user.id}/change/address/')
+        self.assertEqual(response.status_code, 302 )
+
+    def test_profile_change_address_404_wrong_id(self):
+        user = User.objects.get(username='user_2')
+        self.client.post('/accounts/login/', {'username':'user_2',
+            'password':'P4s5W0r6'})
+        response = self.client.get('/accounts/profile/404/change/address/')
+        self.assertEqual(response.status_code, 404 )
+
+    def test_profile_change_address_status_code(self):
+        user = User.objects.get(username='user_2')
+        self.client.post('/accounts/login/', {'username':'user_2',
+            'password':'P4s5W0r6'})
+        response = self.client.get(f'/accounts/profile/{user.id}/change/address/')
+        self.assertEqual(response.status_code, 200 )
+
+    def test_profile_change_address_template(self):
+        user = User.objects.get(username='user_2')
+        self.client.post('/accounts/login/', {'username':'user_2',
+            'password':'P4s5W0r6'})
+        response = self.client.get(f'/accounts/profile/{user.id}/change/address/')
+        self.assertTemplateUsed(response, 'users/profile_change_address.html' )
+
+    def test_profile_change_address_post_status_code(self):
+        user = User.objects.get(username='user_2')
+        self.client.post('/accounts/login/', {'username':'user_2',
+            'password':'P4s5W0r6'})
+        response = self.client.post(f'/accounts/profile/{user.id}/change/address/',
+            {'fiscal_code': 'GRRNDR65D13F839E', 'address': 'Where?',
+            'phone': '123456789'})
+        self.assertEqual(response.status_code, 302 )
+
+    def test_profile_change_address_post_redirects(self):
+        user = User.objects.get(username='user_2')
+        self.client.post('/accounts/login/', {'username':'user_2',
+            'password':'P4s5W0r6'})
+        response = self.client.post(f'/accounts/profile/{user.id}/change/address/',
+            {'fiscal_code': 'GRRNDR65D13F839E', 'address': 'Where?',
+            'phone': '123456789'})
+        self.assertRedirects(response,
+            f'/accounts/profile/?submitted={user.username}' )
