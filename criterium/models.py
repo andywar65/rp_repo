@@ -63,10 +63,7 @@ class Race(models.Model):
             else:
                 self.date = temp.date()
         super(Race, self).save(*args, **kwargs)
-        try:
-            rcache = RaceCache.objects.get(race_id = self.id)
-        except:
-            rcache = RaceCache.objects.create(race = self)
+        RaceCache.objects.get_or_create(race_id = self.id)
 
     def __str__(self):
         return self.title
