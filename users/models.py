@@ -48,13 +48,7 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
         if self.is_active:
-            try:
-                memb = Profile.objects.get(user_id = self.id)
-                return
-            except:
-                memb = Profile.objects.create(user = self)
-                memb.save()
-                return
+            Profile.objects.get_or_create(user = self)
 
     class Meta:
         verbose_name = 'Utente'
