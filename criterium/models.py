@@ -67,15 +67,6 @@ class Race(models.Model):
             rcache = RaceCache.objects.get(race_id = self.id)
         except:
             rcache = RaceCache.objects.create(race = self)
-        athletes = Athlete.objects.filter(race_id=self.id)
-        athl_list = []
-        for athlete in athletes:
-            athl_list.append({'user': athlete.user.id,
-                'name': athlete.user.get_full_name(),
-                'gender': athlete.user.profile.gender,
-                'points': athlete.points})
-        rcache.cache = athl_list
-        rcache.save()
 
     def __str__(self):
         return self.title

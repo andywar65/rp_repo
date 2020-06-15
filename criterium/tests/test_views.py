@@ -42,9 +42,19 @@ class RaceViewTest(TestCase):
         Athlete.objects.create(user=user, race=race2, points=2)
         Athlete.objects.create(user=user, race=race3, points=3)
         #update the RaceCache items
-        race.save()
-        race2.save()
-        race3.save()
+        rcache = race.racecache
+        rcache.cache = [{'user': 2, 'name': 'Alberto Juantorena', 'gender': 'M',
+            'points': 1}]
+        rcache.save()
+        rcache2 = race2.racecache
+        rcache2.cache = [{'user': 2, 'name': 'Alberto Juantorena', 'gender': 'M',
+            'points': 2}]
+        rcache2.save()
+        rcache3 = race3.racecache
+        rcache3.cache = [{'user': 2, 'name': 'Alberto Juantorena', 'gender': 'M',
+            'points': 3}]
+        rcache3.save()
+
 
     def test_race_redirect_view_status_code(self):
         response = self.client.get('/criterium/')
