@@ -9,3 +9,4 @@ django-crispy-forms>=1.8<1.9
 django-treebeard>=4.3<4.4
 requests>=2.22<2.23
 backports-datetime-fromisoformat>=1.0<1.1
+django-private-storage>=2.2<2.3

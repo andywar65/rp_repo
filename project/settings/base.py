@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'taggit',
     'crispy_forms',
     'treebeard',
+    'private_storage',
 ]
 
 MIDDLEWARE = [
