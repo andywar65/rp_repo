@@ -11,6 +11,7 @@ from django.utils.crypto import get_random_string
 
 from filebrowser.fields import FileBrowseField
 from filebrowser.base import FileObject
+from private_storage.fields import PrivateFileField
 from .choices import *
 from .validators import validate_codice_fiscale
 
@@ -77,7 +78,7 @@ def user_private_directory_path(instance, filename):
     root = os.path.splitext(filename)[0]
     ext = os.path.splitext(filename)[1]
     filename = '%s_%s%s' % (root, get_random_string(7), ext)
-    return 'private-media/users/{0}/{1}'.format(instance.user.username, filename)
+    return 'users/{0}/{1}'.format(instance.user.username, filename)
 
 def mc_state_email(mailto, name, state):
     message = f"""Buongiorno \n
@@ -133,16 +134,16 @@ class Profile(models.Model):
     no_course_membership = models.CharField(max_length = 4, choices = NO_COURSE,
         null = True, verbose_name = 'Federazione / Ente sportivo',
         )
-    sign_up = models.FileField(
-        upload_to = user_directory_path,
+    sign_up = PrivateFileField(
+        upload_to = user_private_directory_path,
         blank = True, null = True, verbose_name = 'Richiesta di tesseramento',
         )
-    privacy = models.FileField(
-        upload_to = user_directory_path,
+    privacy = PrivateFileField(
+        upload_to = user_private_directory_path,
         blank = True, null = True, verbose_name = 'Privacy',
         )
-    med_cert = models.FileField(
-        upload_to = user_directory_path,
+    med_cert = PrivateFileField(
+        upload_to = user_private_directory_path,
         blank = True, null = True, verbose_name = 'Certificato medico',
         )
     is_trusted = models.BooleanField(default = False,
@@ -237,8 +238,8 @@ class UserMessage(models.Model):
     subject = models.CharField(max_length = 200,
         verbose_name = 'Soggetto', )
     body = models.TextField(verbose_name = 'Messaggio', )
-    attachment = models.FileField(
-        upload_to = user_directory_path,
+    attachment = PrivateFileField(
+        upload_to = user_private_directory_path,
         blank = True, null = True, verbose_name = 'Allegato',
         )
     privacy = models.BooleanField( default=False )
