@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.utils.html import format_html
 
-from users.models import User, CourseSchedule, Profile, UserMessage
+from users.models import (User, CourseSchedule, Profile, UserMessage,
+    user_directory_path, user_private_directory_path)
 
 class UserModelTest(TestCase):
     @classmethod
@@ -51,6 +52,16 @@ class UserModelTest(TestCase):
         UserMessage.objects.create(user=user, subject='Foo', body='Bar')
         UserMessage.objects.create(nickname='Nick Name',
             email='me@example.com', subject='Foo', body='Bar')
+
+    def test_user_directory_path(self):
+        user = User.objects.get(username='andy.war65')
+        path = user_directory_path(user.profile, 'image.jpg')
+        self.assertEqual(path.split('_')[0], 'uploads/users/andy.war65/image')
+
+    def test_user_private_directory_path(self):
+        user = User.objects.get(username='andy.war65')
+        path = user_private_directory_path(user.profile, 'image.jpg')
+        self.assertEqual(path.split('_')[0], 'users/andy.war65/image')
 
     def test_user_get_full_name(self):
         user = User.objects.get(username='andy.war65')
