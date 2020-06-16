@@ -7,6 +7,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.mail import EmailMessage
 from django.utils.html import format_html
+from django.utils.crypto import get_random_string
 
 from filebrowser.fields import FileBrowseField
 from filebrowser.base import FileObject
@@ -67,7 +68,16 @@ class CourseSchedule(models.Model):
         verbose_name_plural = 'Orari'
 
 def user_directory_path(instance, filename):
+    root = os.path.splitext(filename)[0]
+    ext = os.path.splitext(filename)[1]
+    filename = '%s_%s%s' % (root, get_random_string(7), ext)
     return 'uploads/users/{0}/{1}'.format(instance.user.username, filename)
+
+def user_private_directory_path(instance, filename):
+    root = os.path.splitext(filename)[0]
+    ext = os.path.splitext(filename)[1]
+    filename = '%s_%s%s' % (root, get_random_string(7), ext)
+    return 'private-media/users/{0}/{1}'.format(instance.user.username, filename)
 
 def mc_state_email(mailto, name, state):
     message = f"""Buongiorno \n
