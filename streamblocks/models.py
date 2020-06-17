@@ -21,7 +21,7 @@ class IndexedParagraph(models.Model):
 class CaptionedImage(models.Model):
     fb_image = FileBrowseField("Immagine", max_length=200,
         extensions=[".jpg", ".png", ".jpeg", ".gif", ".tif", ".tiff"],
-        null=True)
+        null=True, directory='images/')
     caption = models.CharField("Didascalia", max_length = 200, blank=True,
         null=True)
 
@@ -32,7 +32,7 @@ class CaptionedImage(models.Model):
 class Gallery(models.Model):
     fb_image = FileBrowseField("Immagine", max_length=200,
         extensions=[".jpg", ".png", ".jpeg", ".gif", ".tif", ".tiff"],
-        null=True)
+        null=True, directory='images/galleries/')
     caption = models.CharField("Didascalia", max_length = 200, blank=True,
         null=True)
 
@@ -58,7 +58,7 @@ class Gallery(models.Model):
 class LandscapeGallery(models.Model):
     fb_image = FileBrowseField("Immagine", max_length=200,
         extensions=[".jpg", ".png", ".jpeg", ".gif", ".tif", ".tiff"],
-        null=True)
+        null=True, directory='images/galleries/landscape/')
     title = models.CharField("Titolo", max_length = 100, blank=True,
         null=True, help_text="Appare molto grande")
     caption = models.CharField("Didascalia", max_length = 200, blank=True,

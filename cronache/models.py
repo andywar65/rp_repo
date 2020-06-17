@@ -20,7 +20,7 @@ from .choices import *
 
 class Location(models.Model):
     fb_image = FileBrowseField("Immagine", max_length=200,
-        directory="locations/", extensions=[".jpg", ".png", ".jpeg", ".gif",
+        directory="images/locations/", extensions=[".jpg", ".png", ".jpeg", ".gif",
         ".tif", ".tiff"], null=True, blank=True)
     title = models.CharField('Titolo',
         help_text='Il nome del luogo',
@@ -74,7 +74,8 @@ class Location(models.Model):
         ordering = ('id', )
 
 class Event(models.Model):
-    fb_image = FileBrowseField("Immagine", max_length=200, directory="events/",
+    fb_image = FileBrowseField("Immagine", max_length=200,
+        directory="images/events/",
         extensions=[".jpg", ".png", ".jpeg", ".gif", ".tif", ".tiff"],
         null=True, blank=True)
     carousel = StreamField(model_list=[ LandscapeGallery, ],

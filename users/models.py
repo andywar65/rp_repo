@@ -9,7 +9,6 @@ from django.core.mail import EmailMessage
 from django.utils.html import format_html
 from django.utils.crypto import get_random_string
 
-from filebrowser.fields import FileBrowseField
 from filebrowser.base import FileObject
 from private_storage.fields import PrivateFileField
 from .choices import *
