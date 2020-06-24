@@ -21,6 +21,11 @@ class RaceViewTest(TestCase):
             content_type=content_type,
         )
         compiler.user_permissions.add(permission)
+        permission = Permission.objects.get(
+            codename='change_race',
+            content_type=content_type,
+        )
+        compiler.user_permissions.add(permission)
         user = User.objects.create_user(username='juantorena',
             first_name = 'Alberto', last_name = 'Juantorena',
             password='P4s5W0r6' )
@@ -203,4 +208,24 @@ class RaceViewTest(TestCase):
             'password':'P4s5W0r6'})
         response = self.client.post('/admin/criterium/race/add/',
             {'title': 'Race 5', 'date': '2020-05-26'})
+        self.assertEqual(response.status_code, 302)
+
+    def test_change_race_validated_and_redirected(self):
+        self.client.post('/admin/login/', {'username':'compiler',
+            'password':'P4s5W0r6'})
+        athl = Athlete.objects.get(points=1)
+        response = self.client.post(f'/admin/criterium/race/{athl.race.id}/change/',
+            {'title': athl.race.title,
+            'event_id': f'{athl.race.event.id}',
+            'athlete_set-TOTAL_FORMS': '1',
+            'athlete_set-INITIAL_FORMS': '1',
+            'athlete_set-MIN_NUM_FORMS': '0',
+            'athlete_set-MAX_NUM_FORMS': '1000',
+            'athlete_set-0-id': f'{athl.id}',
+            'athlete_set-0-race': f'{athl.race.id}',
+            'athlete_set-0-user': f'{athl.user.id}',
+            'athlete_set-0-points': '2',
+            'athlete_set-0-placement': '',
+            'athlete_set-0-time': ''
+            })
         self.assertEqual(response.status_code, 302)
